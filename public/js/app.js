@@ -12,9 +12,102 @@
   const config = await configRes.json();
   const pricing = await RoofCalculator.loadPricing();
 
-  // Set company name
-  document.getElementById("rc-company-name").textContent =
-    pricing.companyName + " — Roofing Calculator";
+  // Translations
+  const lang = pricing.language || "en";
+  const t = (typeof RoofTranslations !== "undefined" && RoofTranslations[lang]) || RoofTranslations.en;
+
+  // Apply translations to static UI
+  function applyTranslations() {
+    document.getElementById("rc-company-name").textContent =
+      pricing.companyName + " — " + t.title;
+    document.querySelector(".rc-subtitle").textContent = t.subtitle;
+
+    // Step labels
+    const stepLabels = document.querySelectorAll(".rc-step-label");
+    if (stepLabels[0]) stepLabels[0].textContent = t.step1;
+    if (stepLabels[1]) stepLabels[1].textContent = t.step2;
+    if (stepLabels[2]) stepLabels[2].textContent = t.step3;
+    if (stepLabels[3]) stepLabels[3].textContent = t.step4;
+
+    // Step 1
+    document.querySelector("#step-1 h2").textContent = t.findYourHome;
+    document.querySelector("#step-1 > p").textContent = t.findYourHomeDesc;
+    document.getElementById("rc-address-input").placeholder = t.addressPlaceholder;
+    const searchBtn = document.getElementById("rc-search-btn");
+    searchBtn.lastChild.textContent = " " + t.search;
+    document.querySelector(".rc-help-text").textContent = t.isThisYourHome;
+    const confirmBtn = document.getElementById("rc-confirm-location");
+    confirmBtn.lastChild.textContent = " " + t.confirmLocation;
+
+    // Step 2
+    document.querySelector("#step-2 h2").textContent = t.yourRoofDetails;
+    document.querySelector("#rc-loading-solar p").textContent = t.analyzingRoof;
+    const detailLabels = document.querySelectorAll(".rc-detail-label");
+    if (detailLabels[0]) detailLabels[0].textContent = t.roofArea;
+    if (detailLabels[1]) detailLabels[1].textContent = t.roofSegments;
+    if (detailLabels[2]) detailLabels[2].textContent = t.avgPitch;
+    const detailUnits = document.querySelectorAll(".rc-detail-unit");
+    if (detailUnits[0]) detailUnits[0].textContent = t.sqFt;
+    if (detailUnits[1]) detailUnits[1].textContent = t.panels;
+    if (detailUnits[2]) detailUnits[2].textContent = t.degrees;
+
+    // Stories label
+    const storiesLabel = document.querySelector('label[for="rc-stories"]');
+    if (storiesLabel) storiesLabel.textContent = t.numStories;
+
+    // Area correct question
+    const areaLabel = document.querySelector('#rc-roof-details > .rc-field:nth-child(3) > label');
+    if (areaLabel) areaLabel.textContent = t.areaCorrect;
+    const radioLabels = document.querySelectorAll(".rc-radio-label");
+    if (radioLabels[0]) radioLabels[0].lastChild.textContent = " " + t.yesLooksRight;
+    if (radioLabels[1]) radioLabels[1].lastChild.textContent = " " + t.noLetMeAdjust;
+
+    // Manual area
+    const customAreaLabel = document.querySelector('label[for="rc-custom-area"]');
+    if (customAreaLabel) customAreaLabel.textContent = t.enterRoofArea;
+
+    // Buttons step 2
+    document.getElementById("rc-step2-next").textContent = t.continue;
+    document.getElementById("rc-step2-back").textContent = t.back;
+
+    // Error fallback
+    document.querySelector("#rc-solar-error > p").textContent = t.couldNotDetect;
+    const fallbackAreaLabel = document.querySelector('label[for="rc-fallback-area"]');
+    if (fallbackAreaLabel) fallbackAreaLabel.textContent = t.estRoofArea;
+    const fallbackPitchLabel = document.querySelector('label[for="rc-fallback-pitch"]');
+    if (fallbackPitchLabel) fallbackPitchLabel.textContent = t.roofPitch;
+    const fallbackStoriesLabel = document.querySelector('label[for="rc-fallback-stories"]');
+    if (fallbackStoriesLabel) fallbackStoriesLabel.textContent = t.numStories;
+    document.getElementById("rc-fallback-next").textContent = t.continue;
+    document.getElementById("rc-fallback-back").textContent = t.back;
+
+    // Step 3
+    document.querySelector("#step-3 h2").textContent = t.chooseOptions;
+    const step3Labels = document.querySelectorAll("#step-3 .rc-field > label");
+    if (step3Labels[0]) step3Labels[0].textContent = t.roofingMaterial;
+    if (step3Labels[1]) step3Labels[1].textContent = t.additionalOptions;
+    const step3Next = document.getElementById("rc-step3-next");
+    step3Next.lastChild.textContent = " " + t.getMyEstimate;
+    document.getElementById("rc-step3-back").textContent = t.back;
+
+    // Step 4
+    document.querySelector("#step-4 h2").textContent = t.yourEstimate;
+    document.querySelector(".rc-estimate-label").textContent = t.estimatedCost;
+    document.querySelector(".rc-lead-form h3").textContent = t.getDetailedQuote;
+    document.querySelector(".rc-lead-form p").textContent = t.getDetailedQuoteDesc;
+    document.getElementById("rc-lead-name").placeholder = t.fullName;
+    document.getElementById("rc-lead-email").placeholder = t.emailAddress;
+    document.getElementById("rc-lead-phone").placeholder = t.phoneNumber;
+    document.getElementById("rc-lead-notes").placeholder = t.additionalNotes;
+    const submitBtn = document.getElementById("rc-submit-lead");
+    submitBtn.lastChild.textContent = " " + t.requestQuote;
+    document.querySelector("#rc-lead-success h3").textContent = t.thankYou;
+    document.querySelector("#rc-lead-success p").textContent = t.thankYouMsg;
+    const startOverBtn = document.getElementById("rc-start-over");
+    startOverBtn.lastChild.textContent = " " + t.startOver;
+  }
+
+  applyTranslations();
 
   // Init Google Maps
   try {
@@ -22,7 +115,7 @@
   } catch (err) {
     console.error("Maps init failed:", err);
     document.getElementById("rc-map").innerHTML =
-      '<p style="padding:20px;text-align:center;color:#43474e;">Could not load Google Maps. Check your API key.</p>';
+      `<p style="padding:20px;text-align:center;color:#43474e;">${t.couldNotLoadMaps}</p>`;
   }
 
   // Populate dropdowns and options from pricing config
@@ -50,7 +143,7 @@
   // --- Step 1: Confirm location ---
   document.getElementById("rc-confirm-location").addEventListener("click", async () => {
     const loc = RoofMap.getSelectedLocation();
-    if (!loc) return alert("Please select a location on the map.");
+    if (!loc) return alert(t.selectLocation);
     goToStep(2);
     await fetchSolarData(loc);
   });
@@ -102,7 +195,7 @@
     const noRadio = document.querySelector('input[name="rc-area-correct"][value="no"]');
     if (noRadio && noRadio.checked) {
       const customArea = parseInt(document.getElementById("rc-custom-area").value);
-      if (!customArea || customArea < 100) return alert("Please enter a valid roof area.");
+      if (!customArea || customArea < 100) return alert(t.validRoofArea);
       roofData.totalAreaSqFt = customArea;
     }
     roofData.stories = document.getElementById("rc-stories").value;
@@ -114,7 +207,7 @@
   // Step 2 continue (fallback / error flow)
   document.getElementById("rc-fallback-next").addEventListener("click", () => {
     const area = parseInt(document.getElementById("rc-fallback-area").value);
-    if (!area || area < 100) return alert("Please enter a valid roof area.");
+    if (!area || area < 100) return alert(t.validRoofArea);
     const pitchSelect = document.getElementById("rc-fallback-pitch");
     const pitchRatio = parseInt(pitchSelect.value);
     const stories = document.getElementById("rc-fallback-stories").value;
@@ -134,7 +227,7 @@
 
   // --- Step 3 ---
   document.getElementById("rc-step3-next").addEventListener("click", () => {
-    if (!selectedMaterial) return alert("Please select a roofing material.");
+    if (!selectedMaterial) return alert(t.selectMaterial);
     calculateEstimate();
     goToStep(4);
   });
@@ -176,7 +269,7 @@
         (m) => `
       <div class="rc-material-card" data-id="${m.id}">
         <div class="rc-material-name">${m.name}</div>
-        <div class="rc-material-price">$${m.pricePerSqFt.toFixed(2)} / sq ft</div>
+        <div class="rc-material-price">$${m.pricePerSqFt.toFixed(2)} ${t.perSqFt}</div>
         <div class="rc-material-desc">${m.description}</div>
       </div>
     `
@@ -254,14 +347,14 @@
         )
         .join("") +
       `<div class="rc-breakdown-row total">
-        <span>Total Estimate</span>
+        <span>${t.totalEstimate}</span>
         <span>$${estimate.total.toLocaleString()}</span>
       </div>`;
 
     // Disclaimer
     document.getElementById("rc-disclaimer").textContent = estimate.disclaimer;
     document.getElementById("rc-company-phone-display").textContent =
-      `Call us: ${pricing.companyPhone}`;
+      `${t.callUs} ${pricing.companyPhone}`;
   }
 
   // --- Lead submission ---
@@ -272,7 +365,7 @@
     const notes = document.getElementById("rc-lead-notes").value.trim();
 
     if (!name || !email || !phone) {
-      return alert("Please fill in your name, email, and phone number.");
+      return alert(t.fillRequired);
     }
 
     const leadData = {
@@ -301,7 +394,7 @@
         document.getElementById("rc-lead-success").classList.remove("hidden");
       }
     } catch (err) {
-      alert("Something went wrong. Please try again.");
+      alert(t.somethingWrong);
     }
   }
 })();

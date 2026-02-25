@@ -63,5 +63,6 @@
   ],
   "minimumJobPrice": 3500,
   "wasteFactor": 1.10,
-  "disclaimer": "This estimate is for budgetary purposes only. Final pricing requires an on-site inspection. Pricing may vary based on local codes, permits, structural conditions, and material availability."
+  "disclaimer": "This estimate is for budgetary purposes only. Final pricing requires an on-site inspection. Pricing may vary based on local codes, permits, structural conditions, and material availability.",
+  "language": "en"
 }

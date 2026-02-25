@@ -293,6 +293,7 @@
     renderPitch();
     renderStories();
     renderExtras();
+    renderLanguage();
   }
 
   // Helper to set value on both native inputs and MD3 text fields
@@ -378,6 +379,21 @@
       });
     });
   }
+
+  function renderLanguage() {
+    const lang = pricing.language || "en";
+    const radio = document.querySelector(`input[name="calc-language"][value="${lang}"]`);
+    if (radio) radio.checked = true;
+  }
+
+  // Save language
+  document.getElementById("language-save").addEventListener("click", async () => {
+    const selected = document.querySelector('input[name="calc-language"]:checked');
+    if (selected) {
+      pricing.language = selected.value;
+      await savePricing("language-msg");
+    }
+  });
 
   // Add material
   document.getElementById("admin-add-material").addEventListener("click", () => {

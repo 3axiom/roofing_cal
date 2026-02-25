@@ -60,6 +60,10 @@
           <span class="material-symbols-outlined">business</span>
           Company Info
         </button>
+        <button class="nav-item" data-tab="language">
+          <span class="material-symbols-outlined">translate</span>
+          Language
+        </button>
       </nav>
       <div class="sidebar-footer">
         <a href="/" class="nav-item">
@@ -236,6 +240,41 @@
           </button>
         </div>
         <div id="company-msg" class="dash-msg hidden"></div>
+      </section>
+
+      <!-- Tab: Language -->
+      <section id="tab-language" class="tab-content">
+        <div class="tab-header">
+          <h1>Language Settings</h1>
+          <p>Choose the language displayed on the customer-facing calculator</p>
+        </div>
+
+        <div class="dash-card">
+          <div class="lang-options">
+            <label class="lang-option" data-lang="en">
+              <input type="radio" name="calc-language" value="en">
+              <div class="lang-card">
+                <span class="lang-name">English</span>
+                <span class="lang-desc">Calculator displays in English</span>
+              </div>
+            </label>
+            <label class="lang-option" data-lang="es">
+              <input type="radio" name="calc-language" value="es">
+              <div class="lang-card">
+                <span class="lang-name">Espa&ntilde;ol</span>
+                <span class="lang-desc">La calculadora se muestra en espa&ntilde;ol</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="dash-actions">
+          <button class="btn-primary" id="language-save">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:6px;">save</span>
+            Save Language
+          </button>
+        </div>
+        <div id="language-msg" class="dash-msg hidden"></div>
       </section>
     </main>
   </div>
