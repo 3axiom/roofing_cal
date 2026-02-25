@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Roofing Calculator Pricing</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .admin-wrap { max-width: 800px; margin: 0 auto; padding: 24px; }
+    .admin-wrap h1 { margin-bottom: 24px; }
+    .admin-section { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 20px; box-shadow: var(--rc-shadow); }
+    .admin-section h2 { font-size: 18px; margin-bottom: 16px; border-bottom: 1px solid var(--rc-gray-200); padding-bottom: 8px; }
+    .admin-row { display: grid; grid-template-columns: 1fr 120px 1fr; gap: 10px; align-items: end; margin-bottom: 12px; }
+    .admin-row label { font-size: 13px; font-weight: 600; color: var(--rc-gray-700); }
+    .admin-row input, .admin-row select { padding: 8px 10px; border: 1px solid var(--rc-gray-300); border-radius: 6px; font-size: 14px; }
+    .admin-actions { display: flex; gap: 12px; margin-top: 20px; }
+    .admin-msg { padding: 12px; border-radius: 6px; margin-top: 12px; font-size: 14px; }
+    .admin-msg.success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .admin-msg.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rc-gray-200); }
+    th { font-weight: 600; color: var(--rc-gray-500); font-size: 12px; text-transform: uppercase; }
+    td input { width: 100%; padding: 6px 8px; border: 1px solid var(--rc-gray-300); border-radius: 4px; }
+    .btn-remove { color: var(--rc-danger); cursor: pointer; background: none; border: none; font-size: 18px; }
+    .btn-add { color: var(--rc-primary); cursor: pointer; background: none; border: none; font-size: 14px; font-weight: 600; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="admin-wrap">
+    <h1>Pricing Configuration</h1>
+
+    <!-- Company Info -->
+    <div class="admin-section">
+      <h2>Company Info</h2>
+      <div class="rc-field">
+        <label for="admin-company-name">Company Name</label>
+        <input type="text" id="admin-company-name">
+      </div>
+      <div class="rc-field">
+        <label for="admin-company-phone">Company Phone</label>
+        <input type="tel" id="admin-company-phone">
+      </div>
+    </div>
+
+    <!-- Materials -->
+    <div class="admin-section">
+      <h2>Materials</h2>
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Price / sq ft</th><th>Description</th><th></th></tr>
+        </thead>
+        <tbody id="admin-materials"></tbody>
+      </table>
+      <button class="btn-add" id="admin-add-material">+ Add Material</button>
+    </div>
+
+    <!-- Pitch Multipliers -->
+    <div class="admin-section">
+      <h2>Pitch Multipliers</h2>
+      <table>
+        <thead>
+          <tr><th>Label</th><th>Min (x/12)</th><th>Max (x/12)</th><th>Multiplier</th></tr>
+        </thead>
+        <tbody id="admin-pitch"></tbody>
+      </table>
+    </div>
+
+    <!-- Stories -->
+    <div class="admin-section">
+      <h2>Story Multipliers</h2>
+      <table>
+        <thead>
+          <tr><th>Stories</th><th>Label</th><th>Multiplier</th></tr>
+        </thead>
+        <tbody id="admin-stories"></tbody>
+      </table>
+    </div>
+
+    <!-- Tear-Off -->
+    <div class="admin-section">
+      <h2>Tear-Off Pricing</h2>
+      <table>
+        <thead>
+          <tr><th>Option</th><th>Label</th><th>Price / sq ft</th></tr>
+        </thead>
+        <tbody id="admin-tearoff"></tbody>
+      </table>
+    </div>
+
+    <!-- Extras -->
+    <div class="admin-section">
+      <h2>Extras / Add-ons</h2>
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Flat $</th><th>$ / sq ft</th><th>$ / lin ft</th><th></th></tr>
+        </thead>
+        <tbody id="admin-extras"></tbody>
+      </table>
+      <button class="btn-add" id="admin-add-extra">+ Add Extra</button>
+    </div>
+
+    <!-- Other Settings -->
+    <div class="admin-section">
+      <h2>Other Settings</h2>
+      <div class="rc-field">
+        <label for="admin-min-price">Minimum Job Price ($)</label>
+        <input type="number" id="admin-min-price" step="100">
+      </div>
+      <div class="rc-field">
+        <label for="admin-waste">Waste Factor (e.g. 1.10 = 10%)</label>
+        <input type="number" id="admin-waste" step="0.01" min="1" max="2">
+      </div>
+      <div class="rc-field">
+        <label for="admin-disclaimer">Disclaimer Text</label>
+        <textarea id="admin-disclaimer" rows="3" style="width:100%;padding:8px;border:1px solid var(--rc-gray-300);border-radius:6px;font-size:14px;font-family:var(--rc-font);"></textarea>
+      </div>
+    </div>
+
+    <div class="admin-actions">
+      <button class="rc-btn rc-btn-primary" id="admin-save">Save Pricing</button>
+      <a href="/" class="rc-btn rc-btn-secondary" style="text-decoration:none;">View Calculator</a>
+    </div>
+
+    <div id="admin-msg" class="admin-msg hidden"></div>
+  </div>
+
+  <script src="/admin/admin.js"></script>
+</body>
+</html>

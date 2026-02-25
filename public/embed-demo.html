@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embed Demo — Roofing Calculator</title>
+  <style>
+    body { font-family: sans-serif; max-width: 960px; margin: 40px auto; padding: 0 20px; }
+    h1 { margin-bottom: 8px; }
+    p { color: #666; margin-bottom: 20px; }
+    pre { background: #f5f5f5; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 14px; }
+    code { color: #d63384; }
+  </style>
+</head>
+<body>
+  <h1>Embed the Roofing Calculator</h1>
+  <p>Copy the snippet below to embed the calculator on any website.</p>
+
+  <pre><code>&lt;div id="roofing-calculator-widget"&gt;&lt;/div&gt;
+&lt;script src="https://your-domain.com/js/embed.js"
+        data-server="https://your-domain.com"&gt;&lt;/script&gt;</code></pre>
+
+  <h2>Live Preview</h2>
+
+  <!-- Widget is loaded via iframe embed script pointing at localhost -->
+  <div id="roofing-calculator-widget"></div>
+  <script src="/js/embed.js" data-server=""></script>
+</body>
+</html>

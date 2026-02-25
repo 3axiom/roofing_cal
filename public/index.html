@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roofing Cost Calculator</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div id="roofing-calculator" class="rc-container">
+
+    <!-- Header -->
+    <header class="rc-header">
+      <h1 id="rc-company-name">Roofing Cost Calculator</h1>
+      <p class="rc-subtitle">Get an instant estimate for your roof</p>
+    </header>
+
+    <!-- Progress Steps -->
+    <div class="rc-progress">
+      <div class="rc-step active" data-step="1">
+        <span class="rc-step-num">1</span>
+        <span class="rc-step-label">Find Home</span>
+      </div>
+      <div class="rc-step" data-step="2">
+        <span class="rc-step-num">2</span>
+        <span class="rc-step-label">Roof Details</span>
+      </div>
+      <div class="rc-step" data-step="3">
+        <span class="rc-step-num">3</span>
+        <span class="rc-step-label">Options</span>
+      </div>
+      <div class="rc-step" data-step="4">
+        <span class="rc-step-num">4</span>
+        <span class="rc-step-label">Estimate</span>
+      </div>
+    </div>
+
+    <!-- Step 1: Find Your Home -->
+    <section class="rc-panel active" id="step-1">
+      <h2>Find Your Home</h2>
+      <p>Enter your address and confirm your home on the map.</p>
+
+      <div class="rc-search-bar">
+        <input
+          type="text"
+          id="rc-address-input"
+          placeholder="Enter your address..."
+          autocomplete="off"
+        />
+        <button id="rc-search-btn" class="rc-btn rc-btn-primary">Search</button>
+      </div>
+
+      <div id="rc-map" class="rc-map"></div>
+
+      <div id="rc-map-confirm" class="rc-map-confirm hidden">
+        <p><strong id="rc-selected-address"></strong></p>
+        <p class="rc-help-text">Is this your home? Click on the map to adjust the pin if needed.</p>
+        <button id="rc-confirm-location" class="rc-btn rc-btn-primary">Yes, This Is My Home</button>
+      </div>
+    </section>
+
+    <!-- Step 2: Roof Data (auto-fetched) -->
+    <section class="rc-panel" id="step-2">
+      <h2>Your Roof Details</h2>
+
+      <div id="rc-loading-solar" class="rc-loading">
+        <div class="rc-spinner"></div>
+        <p>Analyzing your roof from satellite data...</p>
+      </div>
+
+      <div id="rc-roof-details" class="hidden">
+        <div class="rc-detail-cards">
+          <div class="rc-detail-card">
+            <span class="rc-detail-label">Roof Area</span>
+            <span class="rc-detail-value" id="rc-roof-area">--</span>
+            <span class="rc-detail-unit">sq ft</span>
+          </div>
+          <div class="rc-detail-card">
+            <span class="rc-detail-label">Roof Segments</span>
+            <span class="rc-detail-value" id="rc-roof-segments">--</span>
+            <span class="rc-detail-unit">panels</span>
+          </div>
+          <div class="rc-detail-card">
+            <span class="rc-detail-label">Avg Pitch</span>
+            <span class="rc-detail-value" id="rc-roof-pitch">--</span>
+            <span class="rc-detail-unit">degrees</span>
+          </div>
+        </div>
+
+        <div class="rc-field">
+          <label for="rc-stories">Number of Stories</label>
+          <select id="rc-stories"></select>
+        </div>
+
+        <div class="rc-field">
+          <label>Does the roof area look correct?</label>
+          <div class="rc-inline-group">
+            <label class="rc-radio-label">
+              <input type="radio" name="rc-area-correct" value="yes" checked> Yes, looks right
+            </label>
+            <label class="rc-radio-label">
+              <input type="radio" name="rc-area-correct" value="no"> No, let me adjust
+            </label>
+          </div>
+        </div>
+
+        <div id="rc-manual-area" class="rc-field hidden">
+          <label for="rc-custom-area">Enter roof area (sq ft)</label>
+          <input type="number" id="rc-custom-area" min="100" max="50000" step="10">
+        </div>
+
+        <button id="rc-step2-next" class="rc-btn rc-btn-primary">Continue</button>
+        <button id="rc-step2-back" class="rc-btn rc-btn-secondary">Back</button>
+      </div>
+
+      <div id="rc-solar-error" class="rc-error hidden">
+        <p>We couldn't automatically detect your roof. Please enter the details manually.</p>
+        <div class="rc-field">
+          <label for="rc-fallback-area">Estimated Roof Area (sq ft)</label>
+          <input type="number" id="rc-fallback-area" min="100" max="50000" step="10" placeholder="e.g. 1800">
+        </div>
+        <div class="rc-field">
+          <label for="rc-fallback-pitch">Roof Pitch</label>
+          <select id="rc-fallback-pitch"></select>
+        </div>
+        <div class="rc-field">
+          <label for="rc-fallback-stories">Number of Stories</label>
+          <select id="rc-fallback-stories"></select>
+        </div>
+        <button id="rc-fallback-next" class="rc-btn rc-btn-primary">Continue</button>
+        <button id="rc-fallback-back" class="rc-btn rc-btn-secondary">Back</button>
+      </div>
+    </section>
+
+    <!-- Step 3: Material & Options -->
+    <section class="rc-panel" id="step-3">
+      <h2>Choose Your Options</h2>
+
+      <div class="rc-field">
+        <label>Roofing Material</label>
+        <div id="rc-materials" class="rc-material-grid"></div>
+      </div>
+
+      <div class="rc-field">
+        <label for="rc-tearoff">Existing Roof Tear-off</label>
+        <select id="rc-tearoff"></select>
+      </div>
+
+      <div class="rc-field">
+        <label>Additional Options</label>
+        <div id="rc-extras" class="rc-extras-list"></div>
+      </div>
+
+      <button id="rc-step3-next" class="rc-btn rc-btn-primary">Get My Estimate</button>
+      <button id="rc-step3-back" class="rc-btn rc-btn-secondary">Back</button>
+    </section>
+
+    <!-- Step 4: Estimate Results -->
+    <section class="rc-panel" id="step-4">
+      <h2>Your Roofing Estimate</h2>
+
+      <div class="rc-estimate-result">
+        <div class="rc-estimate-range">
+          <span class="rc-estimate-label">Estimated Cost</span>
+          <span class="rc-estimate-value" id="rc-estimate-total">$0</span>
+        </div>
+
+        <div class="rc-estimate-breakdown" id="rc-breakdown"></div>
+      </div>
+
+      <div class="rc-lead-form">
+        <h3>Get Your Detailed Quote</h3>
+        <p>Leave your info and we'll follow up with a precise on-site estimate.</p>
+        <div class="rc-field">
+          <input type="text" id="rc-lead-name" placeholder="Full Name" required>
+        </div>
+        <div class="rc-field">
+          <input type="email" id="rc-lead-email" placeholder="Email Address" required>
+        </div>
+        <div class="rc-field">
+          <input type="tel" id="rc-lead-phone" placeholder="Phone Number" required>
+        </div>
+        <div class="rc-field">
+          <textarea id="rc-lead-notes" placeholder="Any additional notes (optional)" rows="3"></textarea>
+        </div>
+        <button id="rc-submit-lead" class="rc-btn rc-btn-primary">Request Full Quote</button>
+      </div>
+
+      <div id="rc-lead-success" class="rc-success hidden">
+        <h3>Thank You!</h3>
+        <p>We've received your information. One of our roofing specialists will reach out within 24 hours.</p>
+        <p id="rc-company-phone-display"></p>
+      </div>
+
+      <p class="rc-disclaimer" id="rc-disclaimer"></p>
+
+      <button id="rc-start-over" class="rc-btn rc-btn-secondary">Start Over</button>
+    </section>
+
+  </div>
+
+  <script src="/js/calculator.js"></script>
+  <script src="/js/map.js"></script>
+  <script src="/js/solar.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

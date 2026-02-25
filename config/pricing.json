@@ -1,0 +1,67 @@
+{
+  "companyName": "Your Roofing Company",
+  "companyPhone": "(555) 123-4567",
+  "materials": [
+    {
+      "id": "asphalt_3tab",
+      "name": "3-Tab Asphalt Shingles",
+      "pricePerSqFt": 3.50,
+      "description": "Affordable and reliable. 20-25 year lifespan."
+    },
+    {
+      "id": "asphalt_architectural",
+      "name": "Architectural Shingles",
+      "pricePerSqFt": 4.50,
+      "description": "Premium look with dimensional depth. 30 year lifespan."
+    },
+    {
+      "id": "metal_standing_seam",
+      "name": "Standing Seam Metal",
+      "pricePerSqFt": 9.00,
+      "description": "Durable and energy efficient. 40-70 year lifespan."
+    },
+    {
+      "id": "metal_corrugated",
+      "name": "Corrugated Metal",
+      "pricePerSqFt": 6.50,
+      "description": "Cost-effective metal option. 30-45 year lifespan."
+    },
+    {
+      "id": "tile_concrete",
+      "name": "Concrete Tile",
+      "pricePerSqFt": 10.00,
+      "description": "Classic look, fire resistant. 50+ year lifespan."
+    },
+    {
+      "id": "tile_clay",
+      "name": "Clay Tile",
+      "pricePerSqFt": 14.00,
+      "description": "Premium aesthetic, extremely durable. 50-100 year lifespan."
+    }
+  ],
+  "pitchMultipliers": {
+    "low": { "label": "Low Pitch (2/12 - 4/12)", "min": 2, "max": 4, "multiplier": 1.0 },
+    "medium": { "label": "Medium Pitch (5/12 - 7/12)", "min": 5, "max": 7, "multiplier": 1.15 },
+    "steep": { "label": "Steep Pitch (8/12 - 10/12)", "min": 8, "max": 10, "multiplier": 1.35 },
+    "verysteep": { "label": "Very Steep (11/12 - 14/12)", "min": 11, "max": 14, "multiplier": 1.55 }
+  },
+  "stories": {
+    "1": { "label": "Single Story", "multiplier": 1.0 },
+    "2": { "label": "Two Story", "multiplier": 1.10 },
+    "3": { "label": "Three+ Story", "multiplier": 1.20 }
+  },
+  "tearOff": {
+    "none": { "label": "Overlay (no tear-off)", "pricePerSqFt": 0.00 },
+    "single": { "label": "Remove 1 layer", "pricePerSqFt": 1.00 },
+    "double": { "label": "Remove 2 layers", "pricePerSqFt": 1.75 }
+  },
+  "extras": [
+    { "id": "ice_water_shield", "name": "Ice & Water Shield", "pricePerSqFt": 0.50 },
+    { "id": "ridge_vent", "name": "Ridge Vent System", "flatPrice": 450 },
+    { "id": "gutter_replace", "name": "Gutter Replacement", "pricePerLinFt": 8.00 },
+    { "id": "skylight_flash", "name": "Skylight Re-flash (each)", "flatPrice": 350 }
+  ],
+  "minimumJobPrice": 3500,
+  "wasteFactor": 1.10,
+  "disclaimer": "This estimate is for budgetary purposes only. Final pricing requires an on-site inspection. Pricing may vary based on local codes, permits, structural conditions, and material availability."
+}
