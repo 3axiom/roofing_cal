@@ -29,7 +29,6 @@
   populateStories();
   populatePitchDropdowns();
   populateMaterials();
-  populateTearOff();
   populateExtras();
 
   // --- Navigation ---
@@ -200,16 +199,6 @@
     }
   }
 
-  function populateTearOff() {
-    const select = document.getElementById("rc-tearoff");
-    select.innerHTML = Object.entries(pricing.tearOff)
-      .map(
-        ([key, val]) =>
-          `<option value="${key}">${val.label}${val.pricePerSqFt > 0 ? ` (+$${val.pricePerSqFt.toFixed(2)}/sqft)` : ""}</option>`
-      )
-      .join("");
-  }
-
   function populateExtras() {
     const container = document.getElementById("rc-extras");
     container.innerHTML = pricing.extras
@@ -234,7 +223,6 @@
 
   // --- Calculate ---
   function calculateEstimate() {
-    const tearOff = document.getElementById("rc-tearoff").value;
     const extraIds = Array.from(
       document.querySelectorAll('#rc-extras input[type="checkbox"]:checked')
     ).map((cb) => cb.value);
@@ -244,7 +232,6 @@
       pitchRatio: roofData.pitchRatio,
       materialId: selectedMaterial,
       stories: roofData.stories || "1",
-      tearOff,
       extraIds,
     });
 

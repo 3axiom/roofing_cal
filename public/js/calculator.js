@@ -38,11 +38,10 @@ const RoofCalculator = (() => {
    * @param {number} params.pitchRatio     Pitch as x/12
    * @param {string} params.materialId     Selected material id
    * @param {string} params.stories        "1", "2", or "3"
-   * @param {string} params.tearOff        "none", "single", or "double"
    * @param {string[]} params.extraIds     Array of selected extra ids
    * @returns {Object} Estimate breakdown
    */
-  function calculate({ roofAreaSqFt, pitchRatio, materialId, stories, tearOff, extraIds }) {
+  function calculate({ roofAreaSqFt, pitchRatio, materialId, stories, extraIds }) {
     if (!pricing) throw new Error("Pricing not loaded");
 
     const breakdown = [];
@@ -88,19 +87,7 @@ const RoofCalculator = (() => {
       total += storyExtra;
     }
 
-    // 4. Tear-off
-    const tearOffConfig = pricing.tearOff[tearOff] || pricing.tearOff.none;
-    if (tearOffConfig.pricePerSqFt > 0) {
-      const tearOffCost = adjustedArea * tearOffConfig.pricePerSqFt;
-      breakdown.push({
-        label: `Tear-off: ${tearOffConfig.label}`,
-        detail: `${Math.round(adjustedArea)} sq ft x $${tearOffConfig.pricePerSqFt.toFixed(2)}`,
-        amount: tearOffCost,
-      });
-      total += tearOffCost;
-    }
-
-    // 5. Extras
+    // 4. Extras
     const selectedExtras = pricing.extras.filter((e) => extraIds.includes(e.id));
     selectedExtras.forEach((extra) => {
       let cost = 0;

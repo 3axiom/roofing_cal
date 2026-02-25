@@ -297,7 +297,6 @@
     renderMaterials();
     renderPitch();
     renderStories();
-    renderTearOff();
     renderExtras();
   }
 
@@ -349,21 +348,6 @@
         <td>${key}</td>
         <td><input type="text" value="${esc(val.label)}" data-field="label"></td>
         <td><input type="number" value="${val.multiplier}" step="0.05" data-field="multiplier"></td>
-      </tr>
-    `
-      )
-      .join("");
-  }
-
-  function renderTearOff() {
-    const tbody = document.getElementById("admin-tearoff");
-    tbody.innerHTML = Object.entries(pricing.tearOff)
-      .map(
-        ([key, val]) => `
-      <tr data-tearoff-key="${key}">
-        <td>${key}</td>
-        <td><input type="text" value="${esc(val.label)}" data-field="label"></td>
-        <td><input type="number" value="${val.pricePerSqFt}" step="0.25" data-field="pricePerSqFt"></td>
       </tr>
     `
       )
@@ -442,14 +426,6 @@
       if (pricing.stories[key]) {
         pricing.stories[key].label = row.querySelector('[data-field="label"]').value;
         pricing.stories[key].multiplier = parseFloat(row.querySelector('[data-field="multiplier"]').value);
-      }
-    });
-
-    document.querySelectorAll("#admin-tearoff tr").forEach((row) => {
-      const key = row.dataset.tearoffKey;
-      if (pricing.tearOff[key]) {
-        pricing.tearOff[key].label = row.querySelector('[data-field="label"]').value;
-        pricing.tearOff[key].pricePerSqFt = parseFloat(row.querySelector('[data-field="pricePerSqFt"]').value);
       }
     });
 
