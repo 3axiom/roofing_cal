@@ -4,6 +4,34 @@
 (async () => {
   let pricing = {};
   let leads = [];
+  let t = AdminTranslations.en;
+
+  function getTranslations() {
+    const lang = pricing.language || "en";
+    return AdminTranslations[lang] || AdminTranslations.en;
+  }
+
+  function applyAdminTranslations() {
+    t = getTranslations();
+    const lang = pricing.language || "en";
+    document.documentElement.lang = lang;
+
+    // Update all elements with data-i18n attribute (textContent)
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      if (t[key] != null) el.textContent = t[key];
+    });
+
+    // Update all elements with data-i18n-placeholder attribute
+    document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+      const key = el.getAttribute("data-i18n-placeholder");
+      if (t[key] != null) el.placeholder = t[key];
+    });
+
+    // Re-render dynamic content that contains translated strings
+    renderStats();
+    renderLeads(document.getElementById("leads-search").value);
+  }
 
   // --- DOM refs ---
   const loginScreen = document.getElementById("login-screen");
@@ -56,11 +84,11 @@
         showDashboard();
       } else {
         const data = await res.json();
-        loginError.textContent = data.error || "Login failed";
+        loginError.textContent = data.error || t.loginFailed;
         loginError.classList.remove("hidden");
       }
     } catch {
-      loginError.textContent = "Connection error. Please try again.";
+      loginError.textContent = t.connectionError;
       loginError.classList.remove("hidden");
     }
   });
@@ -76,7 +104,7 @@
       document.querySelectorAll(".nav-item[data-tab]").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
 
-      document.querySelectorAll(".tab-content").forEach((t) => t.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach((tc) => tc.classList.remove("active"));
       document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
 
       // Close mobile menu
@@ -116,15 +144,15 @@
 
     document.getElementById("leads-stats").innerHTML = `
       <div class="stat-card primary">
-        <span class="stat-label">Total Leads</span>
+        <span class="stat-label">${esc(t.totalLeads)}</span>
         <span class="stat-value">${total}</span>
       </div>
       <div class="stat-card">
-        <span class="stat-label">This Month</span>
+        <span class="stat-label">${esc(t.thisMonth)}</span>
         <span class="stat-value">${thisMonth}</span>
       </div>
       <div class="stat-card success">
-        <span class="stat-label">Total Estimated</span>
+        <span class="stat-label">${esc(t.totalEstimated)}</span>
         <span class="stat-value">$${totalEstimate.toLocaleString()}</span>
       </div>
     `;
@@ -163,10 +191,10 @@
           <div class="lead-phone">${esc(l.phone || "\u2014")}</div>
         </td>
         <td class="lead-address" title="${esc(l.address || "")}">${esc(l.address || "\u2014")}</td>
-        <td>${l.roofAreaSqFt ? l.roofAreaSqFt.toLocaleString() + " sq ft" : "\u2014"}</td>
+        <td>${l.roofAreaSqFt ? l.roofAreaSqFt.toLocaleString() + " " + esc(t.sqFt) : "\u2014"}</td>
         <td>${esc(l.material || "\u2014")}</td>
         <td class="lead-estimate">${l.estimateTotal ? "$" + l.estimateTotal.toLocaleString() : "\u2014"}</td>
-        <td><button class="btn-view" data-view-lead="${l.id}">View</button></td>
+        <td><button class="btn-view" data-view-lead="${l.id}">${esc(t.view)}</button></td>
       </tr>
     `
       )
@@ -201,62 +229,62 @@
 
     body.innerHTML = `
       <div class="modal-field">
-        <span class="modal-label">Estimated Total</span>
+        <span class="modal-label">${esc(t.modalEstTotal)}</span>
         <span class="modal-value modal-estimate">${lead.estimateTotal ? "$" + lead.estimateTotal.toLocaleString() : "\u2014"}</span>
       </div>
       <div class="modal-field">
-        <span class="modal-label">Name</span>
+        <span class="modal-label">${esc(t.modalName)}</span>
         <span class="modal-value">${esc(lead.name || "\u2014")}</span>
       </div>
       <div class="modal-field">
-        <span class="modal-label">Email</span>
+        <span class="modal-label">${esc(t.modalEmail)}</span>
         <span class="modal-value"><a href="mailto:${esc(lead.email || "")}">${esc(lead.email || "\u2014")}</a></span>
       </div>
       <div class="modal-field">
-        <span class="modal-label">Phone</span>
+        <span class="modal-label">${esc(t.modalPhone)}</span>
         <span class="modal-value"><a href="tel:${esc(lead.phone || "")}">${esc(lead.phone || "\u2014")}</a></span>
       </div>
       <div class="modal-field">
-        <span class="modal-label">Address</span>
+        <span class="modal-label">${esc(t.modalAddress)}</span>
         <span class="modal-value">${esc(lead.address || "\u2014")}</span>
       </div>
       <div class="modal-field">
-        <span class="modal-label">Roof Area</span>
-        <span class="modal-value">${lead.roofAreaSqFt ? lead.roofAreaSqFt.toLocaleString() + " sq ft" : "\u2014"}</span>
+        <span class="modal-label">${esc(t.modalRoofArea)}</span>
+        <span class="modal-value">${lead.roofAreaSqFt ? lead.roofAreaSqFt.toLocaleString() + " " + esc(t.sqFt) : "\u2014"}</span>
       </div>
       <div class="modal-field">
-        <span class="modal-label">Pitch</span>
+        <span class="modal-label">${esc(t.modalPitch)}</span>
         <span class="modal-value">${lead.pitchRatio ? lead.pitchRatio + "/12" : "\u2014"}</span>
       </div>
       <div class="modal-field">
-        <span class="modal-label">Material</span>
+        <span class="modal-label">${esc(t.modalMaterial)}</span>
         <span class="modal-value">${esc(lead.material || "\u2014")}</span>
       </div>
       <div class="modal-field">
-        <span class="modal-label">Notes</span>
-        <span class="modal-value">${esc(lead.notes || "None")}</span>
+        <span class="modal-label">${esc(t.modalNotes)}</span>
+        <span class="modal-value">${esc(lead.notes || t.none)}</span>
       </div>
       <div class="modal-field">
-        <span class="modal-label">Submitted</span>
+        <span class="modal-label">${esc(t.modalSubmitted)}</span>
         <span class="modal-value">${lead.createdAt ? new Date(lead.createdAt).toLocaleString() : "\u2014"}</span>
       </div>
       <div class="modal-actions">
-        ${lead.email ? `<a href="mailto:${esc(lead.email)}" class="btn-contact email">Email</a>` : ""}
-        ${lead.phone ? `<a href="tel:${esc(lead.phone)}" class="btn-contact phone">Call</a>` : ""}
-        <button class="btn-contact delete" data-delete-lead="${lead.id}">Delete</button>
+        ${lead.email ? `<a href="mailto:${esc(lead.email)}" class="btn-contact email">${esc(t.emailBtn)}</a>` : ""}
+        ${lead.phone ? `<a href="tel:${esc(lead.phone)}" class="btn-contact phone">${esc(t.callBtn)}</a>` : ""}
+        <button class="btn-contact delete" data-delete-lead="${lead.id}">${esc(t.deleteBtn)}</button>
       </div>
     `;
 
     const deleteBtn = body.querySelector("[data-delete-lead]");
     if (deleteBtn) {
       deleteBtn.addEventListener("click", async () => {
-        if (!confirm("Delete this lead? This cannot be undone.")) return;
+        if (!confirm(t.confirmDelete)) return;
         try {
           await fetch("/api/leads/" + lead.id, { method: "DELETE" });
           modal.classList.add("hidden");
           await loadLeads();
         } catch (err) {
-          alert("Failed to delete lead.");
+          alert(t.deleteFailed);
         }
       });
     }
@@ -279,6 +307,7 @@
     const res = await fetch("/api/pricing");
     pricing = await res.json();
     renderPricing();
+    applyAdminTranslations();
   }
 
   function renderPricing() {
@@ -392,6 +421,7 @@
     if (selected) {
       pricing.language = selected.value;
       await savePricing("language-msg");
+      applyAdminTranslations();
     }
   });
 
@@ -481,12 +511,12 @@
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        showMsg(msgId, "Saved successfully!", true);
+        showMsg(msgId, t.savedSuccess, true);
       } else {
-        showMsg(msgId, data.error || "Error saving.", false);
+        showMsg(msgId, data.error || t.errorSaving, false);
       }
     } catch (err) {
-      showMsg(msgId, "Failed to save. " + err.message, false);
+      showMsg(msgId, t.failedToSave + err.message, false);
     }
   }
 
@@ -508,9 +538,21 @@
   function formatDate(iso) {
     if (!iso) return "\u2014";
     const d = new Date(iso);
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    const locale = (pricing.language === "es") ? "es-ES" : "en-US";
+    return d.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" });
   }
 
   // --- Init ---
+  // Apply translations to the login screen immediately via a quick fetch
+  try {
+    const res = await fetch("/api/pricing");
+    if (res.ok) {
+      const data = await res.json();
+      pricing.language = data.language;
+      t = getTranslations();
+      applyAdminTranslations();
+    }
+  } catch { /* login screen stays in English if fetch fails */ }
+
   await checkAuth();
 })();

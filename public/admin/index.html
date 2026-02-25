@@ -18,22 +18,22 @@
         <div class="login-icon">
           <span class="material-symbols-outlined" style="font-size:32px;">roofing</span>
         </div>
-        <h1>Admin Dashboard</h1>
-        <p>Sign in to manage your roofing calculator</p>
+        <h1 data-i18n="adminDashboard">Admin Dashboard</h1>
+        <p data-i18n="signInDesc">Sign in to manage your roofing calculator</p>
       </div>
       <form id="login-form">
         <div class="login-field">
-          <label for="login-user">Username</label>
-          <input type="text" id="login-user" autocomplete="username" required placeholder="Enter username">
+          <label for="login-user" data-i18n="username">Username</label>
+          <input type="text" id="login-user" autocomplete="username" required data-i18n-placeholder="enterUsername" placeholder="Enter username">
         </div>
         <div class="login-field">
-          <label for="login-pass">Password</label>
-          <input type="password" id="login-pass" autocomplete="current-password" required placeholder="Enter password">
+          <label for="login-pass" data-i18n="password">Password</label>
+          <input type="password" id="login-pass" autocomplete="current-password" required data-i18n-placeholder="enterPassword" placeholder="Enter password">
         </div>
         <div id="login-error" class="login-error hidden"></div>
         <button type="submit" class="login-btn">
           <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:6px;">login</span>
-          Sign In
+          <span data-i18n="signIn">Sign In</span>
         </button>
       </form>
     </div>
@@ -45,34 +45,34 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
         <span class="material-symbols-outlined">roofing</span>
-        <span>Roofing Admin</span>
+        <span data-i18n="roofingAdmin">Roofing Admin</span>
       </div>
       <nav class="sidebar-nav">
         <button class="nav-item active" data-tab="leads">
           <span class="material-symbols-outlined">groups</span>
-          Leads & Quotes
+          <span data-i18n="leadsAndQuotes">Leads & Quotes</span>
         </button>
         <button class="nav-item" data-tab="pricing">
           <span class="material-symbols-outlined">payments</span>
-          Pricing
+          <span data-i18n="pricing">Pricing</span>
         </button>
         <button class="nav-item" data-tab="company">
           <span class="material-symbols-outlined">business</span>
-          Company Info
+          <span data-i18n="companyInfo">Company Info</span>
         </button>
         <button class="nav-item" data-tab="language">
           <span class="material-symbols-outlined">translate</span>
-          Language
+          <span data-i18n="language">Language</span>
         </button>
       </nav>
       <div class="sidebar-footer">
         <a href="/" class="nav-item">
           <span class="material-symbols-outlined">desktop_windows</span>
-          View Calculator
+          <span data-i18n="viewCalculator">View Calculator</span>
         </a>
         <button class="nav-item" id="btn-logout">
           <span class="material-symbols-outlined">logout</span>
-          Sign Out
+          <span data-i18n="signOut">Sign Out</span>
         </button>
       </div>
     </aside>
@@ -84,14 +84,14 @@
         <button id="mobile-menu-btn" class="mobile-menu-btn">
           <span class="material-symbols-outlined">menu</span>
         </button>
-        <span class="dash-mobile-title">Roofing Admin</span>
+        <span class="dash-mobile-title" data-i18n="roofingAdmin">Roofing Admin</span>
       </div>
 
       <!-- Tab: Leads -->
       <section id="tab-leads" class="tab-content active">
         <div class="tab-header">
-          <h1>Leads & Quotes</h1>
-          <p>View all customer quote requests and contact information</p>
+          <h1 data-i18n="leadsTitle">Leads & Quotes</h1>
+          <p data-i18n="leadsDesc">View all customer quote requests and contact information</p>
         </div>
 
         <div class="leads-stats" id="leads-stats"></div>
@@ -99,7 +99,7 @@
         <div class="leads-toolbar">
           <div class="search-field">
             <span class="material-symbols-outlined search-icon">search</span>
-            <input type="text" id="leads-search" placeholder="Search by name, email, or address...">
+            <input type="text" id="leads-search" data-i18n-placeholder="searchPlaceholder" placeholder="Search by name, email, or address...">
           </div>
         </div>
 
@@ -107,13 +107,13 @@
           <table class="leads-table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Address</th>
-                <th>Roof Area</th>
-                <th>Material</th>
-                <th>Estimate</th>
+                <th data-i18n="thDate">Date</th>
+                <th data-i18n="thName">Name</th>
+                <th data-i18n="thContact">Contact</th>
+                <th data-i18n="thAddress">Address</th>
+                <th data-i18n="thRoofArea">Roof Area</th>
+                <th data-i18n="thMaterial">Material</th>
+                <th data-i18n="thEstimate">Estimate</th>
                 <th></th>
               </tr>
             </thead>
@@ -121,7 +121,7 @@
           </table>
           <div id="leads-empty" class="leads-empty hidden">
             <span class="material-symbols-outlined" style="font-size:48px;color:#9ca3af;">group_off</span>
-            <p>No leads yet. Quotes will appear here as customers use the calculator.</p>
+            <p data-i18n="noLeads">No leads yet. Quotes will appear here as customers use the calculator.</p>
           </div>
         </div>
       </section>
@@ -129,31 +129,41 @@
       <!-- Tab: Pricing -->
       <section id="tab-pricing" class="tab-content">
         <div class="tab-header">
-          <h1>Pricing Configuration</h1>
-          <p>Manage material prices, multipliers, and add-ons</p>
+          <h1 data-i18n="pricingTitle">Pricing Configuration</h1>
+          <p data-i18n="pricingDesc">Manage material prices, multipliers, and add-ons</p>
         </div>
 
         <!-- Materials -->
         <div class="dash-card">
-          <h2>Materials</h2>
+          <h2 data-i18n="materials">Materials</h2>
           <table class="config-table">
             <thead>
-              <tr><th>Name</th><th>$ / sq ft</th><th>Description</th><th></th></tr>
+              <tr>
+                <th data-i18n="thMatName">Name</th>
+                <th data-i18n="thPricePerSqFt">$ / sq ft</th>
+                <th data-i18n="thDescription">Description</th>
+                <th></th>
+              </tr>
             </thead>
             <tbody id="admin-materials"></tbody>
           </table>
           <button class="btn-add" id="admin-add-material">
             <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:4px;">add</span>
-            Add Material
+            <span data-i18n="addMaterial">Add Material</span>
           </button>
         </div>
 
         <!-- Pitch Multipliers -->
         <div class="dash-card">
-          <h2>Pitch Multipliers</h2>
+          <h2 data-i18n="pitchMultipliers">Pitch Multipliers</h2>
           <table class="config-table">
             <thead>
-              <tr><th>Label</th><th>Min (x/12)</th><th>Max (x/12)</th><th>Multiplier</th></tr>
+              <tr>
+                <th data-i18n="thLabel">Label</th>
+                <th data-i18n="thMin">Min (x/12)</th>
+                <th data-i18n="thMax">Max (x/12)</th>
+                <th data-i18n="thMultiplier">Multiplier</th>
+              </tr>
             </thead>
             <tbody id="admin-pitch"></tbody>
           </table>
@@ -161,10 +171,14 @@
 
         <!-- Stories -->
         <div class="dash-card">
-          <h2>Story Multipliers</h2>
+          <h2 data-i18n="storyMultipliers">Story Multipliers</h2>
           <table class="config-table">
             <thead>
-              <tr><th>Stories</th><th>Label</th><th>Multiplier</th></tr>
+              <tr>
+                <th data-i18n="thStories">Stories</th>
+                <th data-i18n="thLabel">Label</th>
+                <th data-i18n="thMultiplier">Multiplier</th>
+              </tr>
             </thead>
             <tbody id="admin-stories"></tbody>
           </table>
@@ -172,34 +186,40 @@
 
         <!-- Extras -->
         <div class="dash-card">
-          <h2>Extras / Add-ons</h2>
+          <h2 data-i18n="extrasAddons">Extras / Add-ons</h2>
           <table class="config-table">
             <thead>
-              <tr><th>Name</th><th>Flat $</th><th>$ / sq ft</th><th>$ / lin ft</th><th></th></tr>
+              <tr>
+                <th data-i18n="thMatName">Name</th>
+                <th data-i18n="thFlat">Flat $</th>
+                <th data-i18n="thPerSqFt">$ / sq ft</th>
+                <th data-i18n="thPerLinFt">$ / lin ft</th>
+                <th></th>
+              </tr>
             </thead>
             <tbody id="admin-extras"></tbody>
           </table>
           <button class="btn-add" id="admin-add-extra">
             <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:4px;">add</span>
-            Add Extra
+            <span data-i18n="addExtra">Add Extra</span>
           </button>
         </div>
 
         <!-- Other Settings -->
         <div class="dash-card">
-          <h2>Other Settings</h2>
+          <h2 data-i18n="otherSettings">Other Settings</h2>
           <div class="settings-grid">
             <div class="rc-field">
-              <label for="admin-min-price">Minimum Job Price ($)</label>
+              <label for="admin-min-price" data-i18n="minJobPrice">Minimum Job Price ($)</label>
               <input type="number" id="admin-min-price" step="100">
             </div>
             <div class="rc-field">
-              <label for="admin-waste">Waste Factor (e.g. 1.10 = 10%)</label>
+              <label for="admin-waste" data-i18n="wasteFactor">Waste Factor (e.g. 1.10 = 10%)</label>
               <input type="number" id="admin-waste" step="0.01" min="1" max="2">
             </div>
           </div>
           <div class="rc-field" style="margin-top:16px;">
-            <label for="admin-disclaimer">Disclaimer Text</label>
+            <label for="admin-disclaimer" data-i18n="disclaimerText">Disclaimer Text</label>
             <textarea id="admin-disclaimer" rows="3"></textarea>
           </div>
         </div>
@@ -207,7 +227,7 @@
         <div class="dash-actions">
           <button class="btn-primary" id="admin-save">
             <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:6px;">save</span>
-            Save Pricing
+            <span data-i18n="savePricing">Save Pricing</span>
           </button>
         </div>
         <div id="pricing-msg" class="dash-msg hidden"></div>
@@ -216,18 +236,18 @@
       <!-- Tab: Company Info -->
       <section id="tab-company" class="tab-content">
         <div class="tab-header">
-          <h1>Company Information</h1>
-          <p>Update your business name and contact details shown on estimates</p>
+          <h1 data-i18n="companyTitle">Company Information</h1>
+          <p data-i18n="companyDesc">Update your business name and contact details shown on estimates</p>
         </div>
 
         <div class="dash-card">
           <div class="settings-grid">
             <div class="rc-field">
-              <label for="admin-company-name">Company Name</label>
+              <label for="admin-company-name" data-i18n="companyName">Company Name</label>
               <input type="text" id="admin-company-name">
             </div>
             <div class="rc-field">
-              <label for="admin-company-phone">Company Phone</label>
+              <label for="admin-company-phone" data-i18n="companyPhone">Company Phone</label>
               <input type="tel" id="admin-company-phone">
             </div>
           </div>
@@ -236,7 +256,7 @@
         <div class="dash-actions">
           <button class="btn-primary" id="company-save">
             <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:6px;">save</span>
-            Save Company Info
+            <span data-i18n="saveCompany">Save Company Info</span>
           </button>
         </div>
         <div id="company-msg" class="dash-msg hidden"></div>
@@ -245,8 +265,8 @@
       <!-- Tab: Language -->
       <section id="tab-language" class="tab-content">
         <div class="tab-header">
-          <h1>Language Settings</h1>
-          <p>Choose the language displayed on the customer-facing calculator</p>
+          <h1 data-i18n="languageTitle">Language Settings</h1>
+          <p data-i18n="languageDesc">Choose the language for the dashboard and calculator</p>
         </div>
 
         <div class="dash-card">
@@ -254,15 +274,15 @@
             <label class="lang-option" data-lang="en">
               <input type="radio" name="calc-language" value="en">
               <div class="lang-card">
-                <span class="lang-name">English</span>
-                <span class="lang-desc">Calculator displays in English</span>
+                <span class="lang-name" data-i18n="english">English</span>
+                <span class="lang-desc" data-i18n="englishDesc">Display in English</span>
               </div>
             </label>
             <label class="lang-option" data-lang="es">
               <input type="radio" name="calc-language" value="es">
               <div class="lang-card">
-                <span class="lang-name">Espa&ntilde;ol</span>
-                <span class="lang-desc">La calculadora se muestra en espa&ntilde;ol</span>
+                <span class="lang-name" data-i18n="spanish">Español</span>
+                <span class="lang-desc" data-i18n="spanishDesc">Mostrar en español</span>
               </div>
             </label>
           </div>
@@ -271,7 +291,7 @@
         <div class="dash-actions">
           <button class="btn-primary" id="language-save">
             <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:6px;">save</span>
-            Save Language
+            <span data-i18n="saveLanguage">Save Language</span>
           </button>
         </div>
         <div id="language-msg" class="dash-msg hidden"></div>
@@ -283,7 +303,7 @@
   <div id="lead-modal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
-        <h2>Lead Details</h2>
+        <h2 data-i18n="leadDetails">Lead Details</h2>
         <button class="modal-close" id="modal-close">
           <span class="material-symbols-outlined">close</span>
         </button>
@@ -292,6 +312,7 @@
     </div>
   </div>
 
+  <script src="/admin/translations-admin.js"></script>
   <script src="/admin/admin.js"></script>
 </body>
 </html>
