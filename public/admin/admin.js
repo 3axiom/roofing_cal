@@ -1,24 +1,299 @@
 /**
- * Admin page — load and save pricing configuration.
+ * Admin Dashboard — Authentication, Pricing, Leads Management
  */
 (async () => {
   let pricing = {};
+  let leads = [];
 
+  // --- DOM refs ---
+  const loginScreen = document.getElementById("login-screen");
+  const dashboard = document.getElementById("dashboard");
+  const loginForm = document.getElementById("login-form");
+  const loginError = document.getElementById("login-error");
+
+  // --- Auth ---
+  async function checkAuth() {
+    try {
+      const res = await fetch("/api/auth/check");
+      const data = await res.json();
+      if (data.authenticated) {
+        showDashboard();
+      } else {
+        showLogin();
+      }
+    } catch {
+      showLogin();
+    }
+  }
+
+  function showLogin() {
+    loginScreen.classList.remove("hidden");
+    dashboard.classList.add("hidden");
+  }
+
+  function showDashboard() {
+    loginScreen.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+    loadPricing();
+    loadLeads();
+  }
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    loginError.classList.add("hidden");
+
+    const username = document.getElementById("login-user").value;
+    const password = document.getElementById("login-pass").value;
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (res.ok) {
+        showDashboard();
+      } else {
+        const data = await res.json();
+        loginError.textContent = data.error || "Login failed";
+        loginError.classList.remove("hidden");
+      }
+    } catch {
+      loginError.textContent = "Connection error. Please try again.";
+      loginError.classList.remove("hidden");
+    }
+  });
+
+  document.getElementById("btn-logout").addEventListener("click", async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    showLogin();
+  });
+
+  // --- Tab Navigation ---
+  document.querySelectorAll(".nav-item[data-tab]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      // Update nav
+      document.querySelectorAll(".nav-item[data-tab]").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      // Update content
+      document.querySelectorAll(".tab-content").forEach((t) => t.classList.remove("active"));
+      document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+
+      // Close mobile menu
+      document.querySelector(".sidebar").classList.remove("open");
+    });
+  });
+
+  // Mobile menu
+  document.getElementById("mobile-menu-btn").addEventListener("click", () => {
+    document.querySelector(".sidebar").classList.toggle("open");
+  });
+
+  // --- Leads ---
+  async function loadLeads() {
+    try {
+      const res = await fetch("/api/leads");
+      if (res.ok) {
+        leads = await res.json();
+      } else {
+        leads = [];
+      }
+    } catch {
+      leads = [];
+    }
+    renderLeads();
+    renderStats();
+  }
+
+  function renderStats() {
+    const total = leads.length;
+    const totalEstimate = leads.reduce((sum, l) => sum + (l.estimateTotal || 0), 0);
+    const thisMonth = leads.filter((l) => {
+      const d = new Date(l.createdAt);
+      const now = new Date();
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).length;
+
+    document.getElementById("leads-stats").innerHTML = `
+      <div class="stat-card primary">
+        <span class="stat-label">Total Leads</span>
+        <span class="stat-value">${total}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">This Month</span>
+        <span class="stat-value">${thisMonth}</span>
+      </div>
+      <div class="stat-card success">
+        <span class="stat-label">Total Estimated</span>
+        <span class="stat-value">$${totalEstimate.toLocaleString()}</span>
+      </div>
+    `;
+  }
+
+  function renderLeads(filter = "") {
+    const tbody = document.getElementById("leads-body");
+    const empty = document.getElementById("leads-empty");
+    const search = filter.toLowerCase();
+
+    const filtered = leads.filter((l) => {
+      if (!search) return true;
+      return (
+        (l.name || "").toLowerCase().includes(search) ||
+        (l.email || "").toLowerCase().includes(search) ||
+        (l.address || "").toLowerCase().includes(search) ||
+        (l.phone || "").toLowerCase().includes(search)
+      );
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = "";
+      empty.classList.remove("hidden");
+      return;
+    }
+
+    empty.classList.add("hidden");
+    tbody.innerHTML = filtered
+      .map(
+        (l) => `
+      <tr data-lead-id="${l.id}">
+        <td class="lead-date">${formatDate(l.createdAt)}</td>
+        <td class="lead-name">${esc(l.name || "—")}</td>
+        <td class="lead-contact">
+          <div class="lead-email">${esc(l.email || "—")}</div>
+          <div class="lead-phone">${esc(l.phone || "—")}</div>
+        </td>
+        <td class="lead-address" title="${esc(l.address || "")}">${esc(l.address || "—")}</td>
+        <td>${l.roofAreaSqFt ? l.roofAreaSqFt.toLocaleString() + " sq ft" : "—"}</td>
+        <td>${esc(l.material || "—")}</td>
+        <td class="lead-estimate">${l.estimateTotal ? "$" + l.estimateTotal.toLocaleString() : "—"}</td>
+        <td><button class="btn-view" data-view-lead="${l.id}">View</button></td>
+      </tr>
+    `
+      )
+      .join("");
+
+    // Bind view buttons
+    tbody.querySelectorAll("[data-view-lead]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openLeadModal(parseInt(btn.dataset.viewLead));
+      });
+    });
+
+    // Also click on rows
+    tbody.querySelectorAll("tr[data-lead-id]").forEach((row) => {
+      row.addEventListener("click", () => {
+        openLeadModal(parseInt(row.dataset.leadId));
+      });
+    });
+  }
+
+  // Search
+  document.getElementById("leads-search").addEventListener("input", (e) => {
+    renderLeads(e.target.value);
+  });
+
+  // Lead modal
+  function openLeadModal(id) {
+    const lead = leads.find((l) => l.id === id);
+    if (!lead) return;
+
+    const modal = document.getElementById("lead-modal");
+    const body = document.getElementById("modal-body");
+
+    body.innerHTML = `
+      <div class="modal-field">
+        <span class="modal-label">Estimated Total</span>
+        <span class="modal-value modal-estimate">${lead.estimateTotal ? "$" + lead.estimateTotal.toLocaleString() : "—"}</span>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Name</span>
+        <span class="modal-value">${esc(lead.name || "—")}</span>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Email</span>
+        <span class="modal-value"><a href="mailto:${esc(lead.email || "")}">${esc(lead.email || "—")}</a></span>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Phone</span>
+        <span class="modal-value"><a href="tel:${esc(lead.phone || "")}">${esc(lead.phone || "—")}</a></span>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Address</span>
+        <span class="modal-value">${esc(lead.address || "—")}</span>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Roof Area</span>
+        <span class="modal-value">${lead.roofAreaSqFt ? lead.roofAreaSqFt.toLocaleString() + " sq ft" : "—"}</span>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Pitch</span>
+        <span class="modal-value">${lead.pitchRatio ? lead.pitchRatio + "/12" : "—"}</span>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Material</span>
+        <span class="modal-value">${esc(lead.material || "—")}</span>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Notes</span>
+        <span class="modal-value">${esc(lead.notes || "None")}</span>
+      </div>
+      <div class="modal-field">
+        <span class="modal-label">Submitted</span>
+        <span class="modal-value">${lead.createdAt ? new Date(lead.createdAt).toLocaleString() : "—"}</span>
+      </div>
+      <div class="modal-actions">
+        ${lead.email ? `<a href="mailto:${esc(lead.email)}" class="btn-contact email">Email</a>` : ""}
+        ${lead.phone ? `<a href="tel:${esc(lead.phone)}" class="btn-contact phone">Call</a>` : ""}
+        <button class="btn-contact delete" data-delete-lead="${lead.id}">Delete</button>
+      </div>
+    `;
+
+    // Bind delete
+    const deleteBtn = body.querySelector("[data-delete-lead]");
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", async () => {
+        if (!confirm("Delete this lead? This cannot be undone.")) return;
+        try {
+          await fetch("/api/leads/" + lead.id, { method: "DELETE" });
+          modal.classList.add("hidden");
+          await loadLeads();
+        } catch (err) {
+          alert("Failed to delete lead.");
+        }
+      });
+    }
+
+    modal.classList.remove("hidden");
+  }
+
+  // Close modal
+  document.getElementById("modal-close").addEventListener("click", () => {
+    document.getElementById("lead-modal").classList.add("hidden");
+  });
+
+  document.getElementById("lead-modal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) {
+      e.currentTarget.classList.add("hidden");
+    }
+  });
+
+  // --- Pricing ---
   async function loadPricing() {
     const res = await fetch("/api/pricing");
     pricing = await res.json();
-    render();
+    renderPricing();
   }
 
-  function render() {
-    // Company info
+  function renderPricing() {
     document.getElementById("admin-company-name").value = pricing.companyName || "";
     document.getElementById("admin-company-phone").value = pricing.companyPhone || "";
     document.getElementById("admin-min-price").value = pricing.minimumJobPrice || 3500;
     document.getElementById("admin-waste").value = pricing.wasteFactor || 1.1;
     document.getElementById("admin-disclaimer").value = pricing.disclaimer || "";
 
-    // Materials
     renderMaterials();
     renderPitch();
     renderStories();
@@ -32,16 +307,15 @@
       .map(
         (m, i) => `
       <tr data-index="${i}">
-        <td><input type="text" value="${m.name}" data-field="name"></td>
+        <td><input type="text" value="${esc(m.name)}" data-field="name"></td>
         <td><input type="number" value="${m.pricePerSqFt}" step="0.25" data-field="pricePerSqFt"></td>
-        <td><input type="text" value="${m.description}" data-field="description"></td>
+        <td><input type="text" value="${esc(m.description)}" data-field="description"></td>
         <td><button class="btn-remove" data-remove-material="${i}">&times;</button></td>
       </tr>
     `
       )
       .join("");
 
-    // Bind remove buttons
     tbody.querySelectorAll("[data-remove-material]").forEach((btn) => {
       btn.addEventListener("click", () => {
         pricing.materials.splice(parseInt(btn.dataset.removeMaterial), 1);
@@ -56,7 +330,7 @@
       .map(
         ([key, val]) => `
       <tr data-pitch-key="${key}">
-        <td><input type="text" value="${val.label}" data-field="label"></td>
+        <td><input type="text" value="${esc(val.label)}" data-field="label"></td>
         <td><input type="number" value="${val.min}" data-field="min"></td>
         <td><input type="number" value="${val.max}" data-field="max"></td>
         <td><input type="number" value="${val.multiplier}" step="0.05" data-field="multiplier"></td>
@@ -73,7 +347,7 @@
         ([key, val]) => `
       <tr data-story-key="${key}">
         <td>${key}</td>
-        <td><input type="text" value="${val.label}" data-field="label"></td>
+        <td><input type="text" value="${esc(val.label)}" data-field="label"></td>
         <td><input type="number" value="${val.multiplier}" step="0.05" data-field="multiplier"></td>
       </tr>
     `
@@ -88,7 +362,7 @@
         ([key, val]) => `
       <tr data-tearoff-key="${key}">
         <td>${key}</td>
-        <td><input type="text" value="${val.label}" data-field="label"></td>
+        <td><input type="text" value="${esc(val.label)}" data-field="label"></td>
         <td><input type="number" value="${val.pricePerSqFt}" step="0.25" data-field="pricePerSqFt"></td>
       </tr>
     `
@@ -102,7 +376,7 @@
       .map(
         (e, i) => `
       <tr data-extra-index="${i}">
-        <td><input type="text" value="${e.name}" data-field="name"></td>
+        <td><input type="text" value="${esc(e.name)}" data-field="name"></td>
         <td><input type="number" value="${e.flatPrice || ""}" step="25" data-field="flatPrice"></td>
         <td><input type="number" value="${e.pricePerSqFt || ""}" step="0.25" data-field="pricePerSqFt"></td>
         <td><input type="number" value="${e.pricePerLinFt || ""}" step="0.50" data-field="pricePerLinFt"></td>
@@ -122,9 +396,8 @@
 
   // Add material
   document.getElementById("admin-add-material").addEventListener("click", () => {
-    const id = "material_" + Date.now();
     pricing.materials.push({
-      id,
+      id: "material_" + Date.now(),
       name: "New Material",
       pricePerSqFt: 0,
       description: "",
@@ -134,67 +407,52 @@
 
   // Add extra
   document.getElementById("admin-add-extra").addEventListener("click", () => {
-    const id = "extra_" + Date.now();
-    pricing.extras.push({ id, name: "New Add-on", flatPrice: 0 });
+    pricing.extras.push({ id: "extra_" + Date.now(), name: "New Add-on", flatPrice: 0 });
     renderExtras();
   });
 
-  // Save
-  document.getElementById("admin-save").addEventListener("click", async () => {
-    // Collect values from DOM
+  // Collect pricing data from DOM
+  function collectPricing() {
     pricing.companyName = document.getElementById("admin-company-name").value;
     pricing.companyPhone = document.getElementById("admin-company-phone").value;
     pricing.minimumJobPrice = parseFloat(document.getElementById("admin-min-price").value);
     pricing.wasteFactor = parseFloat(document.getElementById("admin-waste").value);
     pricing.disclaimer = document.getElementById("admin-disclaimer").value;
 
-    // Materials
     document.querySelectorAll("#admin-materials tr").forEach((row, i) => {
       if (pricing.materials[i]) {
         pricing.materials[i].name = row.querySelector('[data-field="name"]').value;
-        pricing.materials[i].pricePerSqFt = parseFloat(
-          row.querySelector('[data-field="pricePerSqFt"]').value
-        );
+        pricing.materials[i].pricePerSqFt = parseFloat(row.querySelector('[data-field="pricePerSqFt"]').value);
         pricing.materials[i].description = row.querySelector('[data-field="description"]').value;
       }
     });
 
-    // Pitch
     document.querySelectorAll("#admin-pitch tr").forEach((row) => {
       const key = row.dataset.pitchKey;
       if (pricing.pitchMultipliers[key]) {
         pricing.pitchMultipliers[key].label = row.querySelector('[data-field="label"]').value;
         pricing.pitchMultipliers[key].min = parseInt(row.querySelector('[data-field="min"]').value);
         pricing.pitchMultipliers[key].max = parseInt(row.querySelector('[data-field="max"]').value);
-        pricing.pitchMultipliers[key].multiplier = parseFloat(
-          row.querySelector('[data-field="multiplier"]').value
-        );
+        pricing.pitchMultipliers[key].multiplier = parseFloat(row.querySelector('[data-field="multiplier"]').value);
       }
     });
 
-    // Stories
     document.querySelectorAll("#admin-stories tr").forEach((row) => {
       const key = row.dataset.storyKey;
       if (pricing.stories[key]) {
         pricing.stories[key].label = row.querySelector('[data-field="label"]').value;
-        pricing.stories[key].multiplier = parseFloat(
-          row.querySelector('[data-field="multiplier"]').value
-        );
+        pricing.stories[key].multiplier = parseFloat(row.querySelector('[data-field="multiplier"]').value);
       }
     });
 
-    // Tear-off
     document.querySelectorAll("#admin-tearoff tr").forEach((row) => {
       const key = row.dataset.tearoffKey;
       if (pricing.tearOff[key]) {
         pricing.tearOff[key].label = row.querySelector('[data-field="label"]').value;
-        pricing.tearOff[key].pricePerSqFt = parseFloat(
-          row.querySelector('[data-field="pricePerSqFt"]').value
-        );
+        pricing.tearOff[key].pricePerSqFt = parseFloat(row.querySelector('[data-field="pricePerSqFt"]').value);
       }
     });
 
-    // Extras
     document.querySelectorAll("#admin-extras tr").forEach((row, i) => {
       if (pricing.extras[i]) {
         pricing.extras[i].name = row.querySelector('[data-field="name"]').value;
@@ -206,7 +464,22 @@
         pricing.extras[i].pricePerLinFt = linft ? parseFloat(linft) : undefined;
       }
     });
+  }
 
+  // Save pricing
+  document.getElementById("admin-save").addEventListener("click", async () => {
+    collectPricing();
+    await savePricing("pricing-msg");
+  });
+
+  // Save company info (also saves to pricing)
+  document.getElementById("company-save").addEventListener("click", async () => {
+    pricing.companyName = document.getElementById("admin-company-name").value;
+    pricing.companyPhone = document.getElementById("admin-company-phone").value;
+    await savePricing("company-msg");
+  });
+
+  async function savePricing(msgId) {
     try {
       const res = await fetch("/api/pricing", {
         method: "PUT",
@@ -214,19 +487,37 @@
         body: JSON.stringify(pricing),
       });
       const data = await res.json();
-      showMsg(data.success ? "Pricing saved successfully!" : "Error saving.", data.success);
+      if (res.ok && data.success) {
+        showMsg(msgId, "Saved successfully!", true);
+      } else {
+        showMsg(msgId, data.error || "Error saving.", false);
+      }
     } catch (err) {
-      showMsg("Failed to save. " + err.message, false);
+      showMsg(msgId, "Failed to save. " + err.message, false);
     }
-  });
+  }
 
-  function showMsg(text, success) {
-    const el = document.getElementById("admin-msg");
+  function showMsg(id, text, success) {
+    const el = document.getElementById(id);
     el.textContent = text;
-    el.className = "admin-msg " + (success ? "success" : "error");
+    el.className = "dash-msg " + (success ? "success" : "error");
     el.classList.remove("hidden");
     setTimeout(() => el.classList.add("hidden"), 4000);
   }
 
-  await loadPricing();
+  // --- Helpers ---
+  function esc(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function formatDate(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  // --- Init ---
+  await checkAuth();
 })();

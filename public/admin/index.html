@@ -3,125 +3,239 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — Roofing Calculator Pricing</title>
+  <title>Admin Dashboard — Roofing Calculator</title>
   <link rel="stylesheet" href="/css/styles.css">
-  <style>
-    .admin-wrap { max-width: 800px; margin: 0 auto; padding: 24px; }
-    .admin-wrap h1 { margin-bottom: 24px; }
-    .admin-section { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 20px; box-shadow: var(--rc-shadow); }
-    .admin-section h2 { font-size: 18px; margin-bottom: 16px; border-bottom: 1px solid var(--rc-gray-200); padding-bottom: 8px; }
-    .admin-row { display: grid; grid-template-columns: 1fr 120px 1fr; gap: 10px; align-items: end; margin-bottom: 12px; }
-    .admin-row label { font-size: 13px; font-weight: 600; color: var(--rc-gray-700); }
-    .admin-row input, .admin-row select { padding: 8px 10px; border: 1px solid var(--rc-gray-300); border-radius: 6px; font-size: 14px; }
-    .admin-actions { display: flex; gap: 12px; margin-top: 20px; }
-    .admin-msg { padding: 12px; border-radius: 6px; margin-top: 12px; font-size: 14px; }
-    .admin-msg.success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-    .admin-msg.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rc-gray-200); }
-    th { font-weight: 600; color: var(--rc-gray-500); font-size: 12px; text-transform: uppercase; }
-    td input { width: 100%; padding: 6px 8px; border: 1px solid var(--rc-gray-300); border-radius: 4px; }
-    .btn-remove { color: var(--rc-danger); cursor: pointer; background: none; border: none; font-size: 18px; }
-    .btn-add { color: var(--rc-primary); cursor: pointer; background: none; border: none; font-size: 14px; font-weight: 600; margin-top: 8px; }
-  </style>
+  <link rel="stylesheet" href="/admin/dashboard.css">
 </head>
 <body>
-  <div class="admin-wrap">
-    <h1>Pricing Configuration</h1>
 
-    <!-- Company Info -->
-    <div class="admin-section">
-      <h2>Company Info</h2>
-      <div class="rc-field">
-        <label for="admin-company-name">Company Name</label>
-        <input type="text" id="admin-company-name">
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h1>Admin Dashboard</h1>
+        <p>Sign in to manage your roofing calculator</p>
       </div>
-      <div class="rc-field">
-        <label for="admin-company-phone">Company Phone</label>
-        <input type="tel" id="admin-company-phone">
+      <form id="login-form">
+        <div class="login-field">
+          <label for="login-user">Username</label>
+          <input type="text" id="login-user" autocomplete="username" required>
+        </div>
+        <div class="login-field">
+          <label for="login-pass">Password</label>
+          <input type="password" id="login-pass" autocomplete="current-password" required>
+        </div>
+        <div id="login-error" class="login-error hidden"></div>
+        <button type="submit" class="login-btn">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard (hidden until authenticated) -->
+  <div id="dashboard" class="dashboard hidden">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Roofing Admin</span>
       </div>
-    </div>
-
-    <!-- Materials -->
-    <div class="admin-section">
-      <h2>Materials</h2>
-      <table>
-        <thead>
-          <tr><th>Name</th><th>Price / sq ft</th><th>Description</th><th></th></tr>
-        </thead>
-        <tbody id="admin-materials"></tbody>
-      </table>
-      <button class="btn-add" id="admin-add-material">+ Add Material</button>
-    </div>
-
-    <!-- Pitch Multipliers -->
-    <div class="admin-section">
-      <h2>Pitch Multipliers</h2>
-      <table>
-        <thead>
-          <tr><th>Label</th><th>Min (x/12)</th><th>Max (x/12)</th><th>Multiplier</th></tr>
-        </thead>
-        <tbody id="admin-pitch"></tbody>
-      </table>
-    </div>
-
-    <!-- Stories -->
-    <div class="admin-section">
-      <h2>Story Multipliers</h2>
-      <table>
-        <thead>
-          <tr><th>Stories</th><th>Label</th><th>Multiplier</th></tr>
-        </thead>
-        <tbody id="admin-stories"></tbody>
-      </table>
-    </div>
-
-    <!-- Tear-Off -->
-    <div class="admin-section">
-      <h2>Tear-Off Pricing</h2>
-      <table>
-        <thead>
-          <tr><th>Option</th><th>Label</th><th>Price / sq ft</th></tr>
-        </thead>
-        <tbody id="admin-tearoff"></tbody>
-      </table>
-    </div>
-
-    <!-- Extras -->
-    <div class="admin-section">
-      <h2>Extras / Add-ons</h2>
-      <table>
-        <thead>
-          <tr><th>Name</th><th>Flat $</th><th>$ / sq ft</th><th>$ / lin ft</th><th></th></tr>
-        </thead>
-        <tbody id="admin-extras"></tbody>
-      </table>
-      <button class="btn-add" id="admin-add-extra">+ Add Extra</button>
-    </div>
-
-    <!-- Other Settings -->
-    <div class="admin-section">
-      <h2>Other Settings</h2>
-      <div class="rc-field">
-        <label for="admin-min-price">Minimum Job Price ($)</label>
-        <input type="number" id="admin-min-price" step="100">
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="leads">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Leads & Quotes
+        </button>
+        <button class="nav-item" data-tab="pricing">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Pricing
+        </button>
+        <button class="nav-item" data-tab="company">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Company Info
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="/" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          View Calculator
+        </a>
+        <button class="nav-item" id="btn-logout">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
       </div>
-      <div class="rc-field">
-        <label for="admin-waste">Waste Factor (e.g. 1.10 = 10%)</label>
-        <input type="number" id="admin-waste" step="0.01" min="1" max="2">
-      </div>
-      <div class="rc-field">
-        <label for="admin-disclaimer">Disclaimer Text</label>
-        <textarea id="admin-disclaimer" rows="3" style="width:100%;padding:8px;border:1px solid var(--rc-gray-300);border-radius:6px;font-size:14px;font-family:var(--rc-font);"></textarea>
-      </div>
-    </div>
+    </aside>
 
-    <div class="admin-actions">
-      <button class="rc-btn rc-btn-primary" id="admin-save">Save Pricing</button>
-      <a href="/" class="rc-btn rc-btn-secondary" style="text-decoration:none;">View Calculator</a>
-    </div>
+    <!-- Main Content -->
+    <main class="dash-main">
+      <!-- Mobile header -->
+      <div class="dash-mobile-header">
+        <button id="mobile-menu-btn" class="mobile-menu-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="dash-mobile-title">Roofing Admin</span>
+      </div>
 
-    <div id="admin-msg" class="admin-msg hidden"></div>
+      <!-- Tab: Leads -->
+      <section id="tab-leads" class="tab-content active">
+        <div class="tab-header">
+          <h1>Leads & Quotes</h1>
+          <p>View all customer quote requests and contact information</p>
+        </div>
+
+        <div class="leads-stats" id="leads-stats"></div>
+
+        <div class="leads-toolbar">
+          <input type="text" id="leads-search" class="leads-search" placeholder="Search by name, email, or address...">
+        </div>
+
+        <div class="leads-table-wrap">
+          <table class="leads-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Address</th>
+                <th>Roof Area</th>
+                <th>Material</th>
+                <th>Estimate</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="leads-body"></tbody>
+          </table>
+          <div id="leads-empty" class="leads-empty hidden">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <p>No leads yet. Quotes will appear here as customers use the calculator.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab: Pricing -->
+      <section id="tab-pricing" class="tab-content">
+        <div class="tab-header">
+          <h1>Pricing Configuration</h1>
+          <p>Manage material prices, multipliers, and add-ons</p>
+        </div>
+
+        <!-- Materials -->
+        <div class="dash-card">
+          <h2>Materials</h2>
+          <table class="config-table">
+            <thead>
+              <tr><th>Name</th><th>Price / sq ft</th><th>Description</th><th></th></tr>
+            </thead>
+            <tbody id="admin-materials"></tbody>
+          </table>
+          <button class="btn-add" id="admin-add-material">+ Add Material</button>
+        </div>
+
+        <!-- Pitch Multipliers -->
+        <div class="dash-card">
+          <h2>Pitch Multipliers</h2>
+          <table class="config-table">
+            <thead>
+              <tr><th>Label</th><th>Min (x/12)</th><th>Max (x/12)</th><th>Multiplier</th></tr>
+            </thead>
+            <tbody id="admin-pitch"></tbody>
+          </table>
+        </div>
+
+        <!-- Stories -->
+        <div class="dash-card">
+          <h2>Story Multipliers</h2>
+          <table class="config-table">
+            <thead>
+              <tr><th>Stories</th><th>Label</th><th>Multiplier</th></tr>
+            </thead>
+            <tbody id="admin-stories"></tbody>
+          </table>
+        </div>
+
+        <!-- Tear-Off -->
+        <div class="dash-card">
+          <h2>Tear-Off Pricing</h2>
+          <table class="config-table">
+            <thead>
+              <tr><th>Option</th><th>Label</th><th>Price / sq ft</th></tr>
+            </thead>
+            <tbody id="admin-tearoff"></tbody>
+          </table>
+        </div>
+
+        <!-- Extras -->
+        <div class="dash-card">
+          <h2>Extras / Add-ons</h2>
+          <table class="config-table">
+            <thead>
+              <tr><th>Name</th><th>Flat $</th><th>$ / sq ft</th><th>$ / lin ft</th><th></th></tr>
+            </thead>
+            <tbody id="admin-extras"></tbody>
+          </table>
+          <button class="btn-add" id="admin-add-extra">+ Add Extra</button>
+        </div>
+
+        <!-- Other Settings -->
+        <div class="dash-card">
+          <h2>Other Settings</h2>
+          <div class="rc-field">
+            <label for="admin-min-price">Minimum Job Price ($)</label>
+            <input type="number" id="admin-min-price" step="100">
+          </div>
+          <div class="rc-field">
+            <label for="admin-waste">Waste Factor (e.g. 1.10 = 10%)</label>
+            <input type="number" id="admin-waste" step="0.01" min="1" max="2">
+          </div>
+          <div class="rc-field">
+            <label for="admin-disclaimer">Disclaimer Text</label>
+            <textarea id="admin-disclaimer" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="dash-actions">
+          <button class="rc-btn rc-btn-primary" id="admin-save">Save Pricing</button>
+        </div>
+        <div id="pricing-msg" class="dash-msg hidden"></div>
+      </section>
+
+      <!-- Tab: Company Info -->
+      <section id="tab-company" class="tab-content">
+        <div class="tab-header">
+          <h1>Company Information</h1>
+          <p>Update your business name and contact details shown on estimates</p>
+        </div>
+
+        <div class="dash-card">
+          <div class="rc-field">
+            <label for="admin-company-name">Company Name</label>
+            <input type="text" id="admin-company-name">
+          </div>
+          <div class="rc-field">
+            <label for="admin-company-phone">Company Phone</label>
+            <input type="tel" id="admin-company-phone">
+          </div>
+        </div>
+
+        <div class="dash-actions">
+          <button class="rc-btn rc-btn-primary" id="company-save">Save Company Info</button>
+        </div>
+        <div id="company-msg" class="dash-msg hidden"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Lead Detail Modal -->
+  <div id="lead-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Lead Details</h2>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+    </div>
   </div>
 
   <script src="/admin/admin.js"></script>
