@@ -1,5 +1,6 @@
 /**
  * Admin Dashboard — Authentication, Pricing, Leads Management
+ * Updated for Material 3 web components.
  */
 (async () => {
   let pricing = {};
@@ -73,22 +74,20 @@
   // --- Tab Navigation ---
   document.querySelectorAll(".nav-item[data-tab]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      // Update nav
       document.querySelectorAll(".nav-item[data-tab]").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
 
-      // Update content
       document.querySelectorAll(".tab-content").forEach((t) => t.classList.remove("active"));
       document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
 
       // Close mobile menu
-      document.querySelector(".sidebar").classList.remove("open");
+      document.getElementById("sidebar").classList.remove("open");
     });
   });
 
   // Mobile menu
   document.getElementById("mobile-menu-btn").addEventListener("click", () => {
-    document.querySelector(".sidebar").classList.toggle("open");
+    document.getElementById("sidebar").classList.toggle("open");
   });
 
   // --- Leads ---
@@ -159,22 +158,21 @@
         (l) => `
       <tr data-lead-id="${l.id}">
         <td class="lead-date">${formatDate(l.createdAt)}</td>
-        <td class="lead-name">${esc(l.name || "—")}</td>
+        <td class="lead-name">${esc(l.name || "\u2014")}</td>
         <td class="lead-contact">
-          <div class="lead-email">${esc(l.email || "—")}</div>
-          <div class="lead-phone">${esc(l.phone || "—")}</div>
+          <div class="lead-email">${esc(l.email || "\u2014")}</div>
+          <div class="lead-phone">${esc(l.phone || "\u2014")}</div>
         </td>
-        <td class="lead-address" title="${esc(l.address || "")}">${esc(l.address || "—")}</td>
-        <td>${l.roofAreaSqFt ? l.roofAreaSqFt.toLocaleString() + " sq ft" : "—"}</td>
-        <td>${esc(l.material || "—")}</td>
-        <td class="lead-estimate">${l.estimateTotal ? "$" + l.estimateTotal.toLocaleString() : "—"}</td>
+        <td class="lead-address" title="${esc(l.address || "")}">${esc(l.address || "\u2014")}</td>
+        <td>${l.roofAreaSqFt ? l.roofAreaSqFt.toLocaleString() + " sq ft" : "\u2014"}</td>
+        <td>${esc(l.material || "\u2014")}</td>
+        <td class="lead-estimate">${l.estimateTotal ? "$" + l.estimateTotal.toLocaleString() : "\u2014"}</td>
         <td><button class="btn-view" data-view-lead="${l.id}">View</button></td>
       </tr>
     `
       )
       .join("");
 
-    // Bind view buttons
     tbody.querySelectorAll("[data-view-lead]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -182,7 +180,6 @@
       });
     });
 
-    // Also click on rows
     tbody.querySelectorAll("tr[data-lead-id]").forEach((row) => {
       row.addEventListener("click", () => {
         openLeadModal(parseInt(row.dataset.leadId));
@@ -190,7 +187,7 @@
     });
   }
 
-  // Search
+  // Search (MD3 text field fires input events)
   document.getElementById("leads-search").addEventListener("input", (e) => {
     renderLeads(e.target.value);
   });
@@ -206,35 +203,35 @@
     body.innerHTML = `
       <div class="modal-field">
         <span class="modal-label">Estimated Total</span>
-        <span class="modal-value modal-estimate">${lead.estimateTotal ? "$" + lead.estimateTotal.toLocaleString() : "—"}</span>
+        <span class="modal-value modal-estimate">${lead.estimateTotal ? "$" + lead.estimateTotal.toLocaleString() : "\u2014"}</span>
       </div>
       <div class="modal-field">
         <span class="modal-label">Name</span>
-        <span class="modal-value">${esc(lead.name || "—")}</span>
+        <span class="modal-value">${esc(lead.name || "\u2014")}</span>
       </div>
       <div class="modal-field">
         <span class="modal-label">Email</span>
-        <span class="modal-value"><a href="mailto:${esc(lead.email || "")}">${esc(lead.email || "—")}</a></span>
+        <span class="modal-value"><a href="mailto:${esc(lead.email || "")}">${esc(lead.email || "\u2014")}</a></span>
       </div>
       <div class="modal-field">
         <span class="modal-label">Phone</span>
-        <span class="modal-value"><a href="tel:${esc(lead.phone || "")}">${esc(lead.phone || "—")}</a></span>
+        <span class="modal-value"><a href="tel:${esc(lead.phone || "")}">${esc(lead.phone || "\u2014")}</a></span>
       </div>
       <div class="modal-field">
         <span class="modal-label">Address</span>
-        <span class="modal-value">${esc(lead.address || "—")}</span>
+        <span class="modal-value">${esc(lead.address || "\u2014")}</span>
       </div>
       <div class="modal-field">
         <span class="modal-label">Roof Area</span>
-        <span class="modal-value">${lead.roofAreaSqFt ? lead.roofAreaSqFt.toLocaleString() + " sq ft" : "—"}</span>
+        <span class="modal-value">${lead.roofAreaSqFt ? lead.roofAreaSqFt.toLocaleString() + " sq ft" : "\u2014"}</span>
       </div>
       <div class="modal-field">
         <span class="modal-label">Pitch</span>
-        <span class="modal-value">${lead.pitchRatio ? lead.pitchRatio + "/12" : "—"}</span>
+        <span class="modal-value">${lead.pitchRatio ? lead.pitchRatio + "/12" : "\u2014"}</span>
       </div>
       <div class="modal-field">
         <span class="modal-label">Material</span>
-        <span class="modal-value">${esc(lead.material || "—")}</span>
+        <span class="modal-value">${esc(lead.material || "\u2014")}</span>
       </div>
       <div class="modal-field">
         <span class="modal-label">Notes</span>
@@ -242,7 +239,7 @@
       </div>
       <div class="modal-field">
         <span class="modal-label">Submitted</span>
-        <span class="modal-value">${lead.createdAt ? new Date(lead.createdAt).toLocaleString() : "—"}</span>
+        <span class="modal-value">${lead.createdAt ? new Date(lead.createdAt).toLocaleString() : "\u2014"}</span>
       </div>
       <div class="modal-actions">
         ${lead.email ? `<a href="mailto:${esc(lead.email)}" class="btn-contact email">Email</a>` : ""}
@@ -251,7 +248,6 @@
       </div>
     `;
 
-    // Bind delete
     const deleteBtn = body.querySelector("[data-delete-lead]");
     if (deleteBtn) {
       deleteBtn.addEventListener("click", async () => {
@@ -269,7 +265,6 @@
     modal.classList.remove("hidden");
   }
 
-  // Close modal
   document.getElementById("modal-close").addEventListener("click", () => {
     document.getElementById("lead-modal").classList.add("hidden");
   });
@@ -288,16 +283,23 @@
   }
 
   function renderPricing() {
-    document.getElementById("admin-company-name").value = pricing.companyName || "";
-    document.getElementById("admin-company-phone").value = pricing.companyPhone || "";
-    document.getElementById("admin-min-price").value = pricing.minimumJobPrice || 3500;
-    document.getElementById("admin-waste").value = pricing.wasteFactor || 1.1;
-    document.getElementById("admin-disclaimer").value = pricing.disclaimer || "";
+    // MD3 text fields — set value property
+    setFieldValue("admin-company-name", pricing.companyName || "");
+    setFieldValue("admin-company-phone", pricing.companyPhone || "");
+    setFieldValue("admin-min-price", pricing.minimumJobPrice || 3500);
+    setFieldValue("admin-waste", pricing.wasteFactor || 1.1);
+    setFieldValue("admin-disclaimer", pricing.disclaimer || "");
 
     renderMaterials();
     renderPitch();
     renderStories();
     renderExtras();
+  }
+
+  // Helper to set value on both native inputs and MD3 text fields
+  function setFieldValue(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
   }
 
   function renderMaterials() {
@@ -448,7 +450,7 @@
     await savePricing("pricing-msg");
   });
 
-  // Save company info (also saves to pricing)
+  // Save company info
   document.getElementById("company-save").addEventListener("click", async () => {
     pricing.companyName = document.getElementById("admin-company-name").value;
     pricing.companyPhone = document.getElementById("admin-company-phone").value;
@@ -489,7 +491,7 @@
   }
 
   function formatDate(iso) {
-    if (!iso) return "—";
+    if (!iso) return "\u2014";
     const d = new Date(iso);
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   }

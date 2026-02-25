@@ -1,5 +1,6 @@
 /**
  * Main app controller — ties together map, solar, and calculator modules.
+ * Updated for Material 3 web components.
  */
 (async () => {
   // State
@@ -22,7 +23,7 @@
   } catch (err) {
     console.error("Maps init failed:", err);
     document.getElementById("rc-map").innerHTML =
-      '<p style="padding:20px;text-align:center;color:#666;">Could not load Google Maps. Check your API key.</p>';
+      '<p style="padding:20px;text-align:center;color:var(--md-sys-color-on-surface-variant);">Could not load Google Maps. Check your API key.</p>';
   }
 
   // Populate dropdowns and options from pricing config
@@ -83,11 +84,12 @@
     }
   }
 
-  // Area correction toggle
-  document.querySelectorAll('input[name="rc-area-correct"]').forEach((radio) => {
-    radio.addEventListener("change", (e) => {
+  // Area correction toggle (MD3 radio)
+  document.querySelectorAll('md-radio[name="rc-area-correct"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
       const manualEl = document.getElementById("rc-manual-area");
-      if (e.target.value === "no") {
+      const noRadio = document.querySelector('md-radio[name="rc-area-correct"][value="no"]');
+      if (noRadio && noRadio.checked) {
         manualEl.classList.remove("hidden");
         document.getElementById("rc-custom-area").value = roofData?.totalAreaSqFt || "";
       } else {
@@ -98,8 +100,8 @@
 
   // Step 2 continue (normal flow)
   document.getElementById("rc-step2-next").addEventListener("click", () => {
-    const areaCorrect = document.querySelector('input[name="rc-area-correct"]:checked').value;
-    if (areaCorrect === "no") {
+    const noRadio = document.querySelector('md-radio[name="rc-area-correct"][value="no"]');
+    if (noRadio && noRadio.checked) {
       const customArea = parseInt(document.getElementById("rc-custom-area").value);
       if (!customArea || customArea < 100) return alert("Please enter a valid roof area.");
       roofData.totalAreaSqFt = customArea;
@@ -153,7 +155,7 @@
   // --- Populate functions ---
   function populateStories() {
     const options = Object.entries(pricing.stories)
-      .map(([key, val]) => `<option value="${key}">${val.label}</option>`)
+      .map(([key, val]) => `<md-select-option value="${key}"><div slot="headline">${val.label}</div></md-select-option>`)
       .join("");
     document.getElementById("rc-stories").innerHTML = options;
     const fb = document.getElementById("rc-fallback-stories");
@@ -162,7 +164,7 @@
 
   function populatePitchDropdowns() {
     const options = Object.entries(pricing.pitchMultipliers)
-      .map(([key, val]) => `<option value="${val.min}">${val.label}</option>`)
+      .map(([key, val]) => `<md-select-option value="${val.min}"><div slot="headline">${val.label}</div></md-select-option>`)
       .join("");
     const fb = document.getElementById("rc-fallback-pitch");
     if (fb) fb.innerHTML = options;
@@ -210,7 +212,7 @@
 
         return `
         <label class="rc-extra-item">
-          <input type="checkbox" value="${e.id}">
+          <md-checkbox value="${e.id}"></md-checkbox>
           <div class="rc-extra-info">
             <div class="rc-extra-name">${e.name}</div>
             <div class="rc-extra-price">${priceLabel}</div>
@@ -224,8 +226,8 @@
   // --- Calculate ---
   function calculateEstimate() {
     const extraIds = Array.from(
-      document.querySelectorAll('#rc-extras input[type="checkbox"]:checked')
-    ).map((cb) => cb.value);
+      document.querySelectorAll('#rc-extras md-checkbox')
+    ).filter((cb) => cb.checked).map((cb) => cb.value);
 
     const estimate = RoofCalculator.calculate({
       roofAreaSqFt: roofData.totalAreaSqFt,
@@ -246,7 +248,7 @@
         .map(
           (row) => `
         <div class="rc-breakdown-row">
-          <span>${row.label} <small style="color:var(--rc-gray-500)">${row.detail}</small></span>
+          <span>${row.label} <small>${row.detail}</small></span>
           <span>$${row.amount.toLocaleString()}</span>
         </div>
       `

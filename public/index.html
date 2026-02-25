@@ -4,7 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Roofing Cost Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "https://esm.run/@material/web/"
+      }
+    }
+  </script>
+  <script type="module">
+    import '@material/web/button/filled-button.js';
+    import '@material/web/button/outlined-button.js';
+    import '@material/web/button/text-button.js';
+    import '@material/web/button/filled-tonal-button.js';
+    import '@material/web/textfield/outlined-text-field.js';
+    import '@material/web/select/outlined-select.js';
+    import '@material/web/select/select-option.js';
+    import '@material/web/radio/radio.js';
+    import '@material/web/checkbox/checkbox.js';
+    import '@material/web/progress/circular-progress.js';
+    import '@material/web/divider/divider.js';
+    import '@material/web/icon/icon.js';
+  </script>
 </head>
 <body>
   <div id="roofing-calculator" class="rc-container">
@@ -47,7 +71,10 @@
           placeholder="Enter your address..."
           autocomplete="off"
         />
-        <button id="rc-search-btn" class="rc-btn rc-btn-primary">Search</button>
+        <md-filled-button id="rc-search-btn">
+          <md-icon slot="icon">search</md-icon>
+          Search
+        </md-filled-button>
       </div>
 
       <div id="rc-map" class="rc-map"></div>
@@ -55,7 +82,10 @@
       <div id="rc-map-confirm" class="rc-map-confirm hidden">
         <p><strong id="rc-selected-address"></strong></p>
         <p class="rc-help-text">Is this your home? Click on the map to adjust the pin if needed.</p>
-        <button id="rc-confirm-location" class="rc-btn rc-btn-primary">Yes, This Is My Home</button>
+        <md-filled-button id="rc-confirm-location">
+          <md-icon slot="icon">check_circle</md-icon>
+          Yes, This Is My Home
+        </md-filled-button>
       </div>
     </section>
 
@@ -64,7 +94,7 @@
       <h2>Your Roof Details</h2>
 
       <div id="rc-loading-solar" class="rc-loading">
-        <div class="rc-spinner"></div>
+        <md-circular-progress indeterminate></md-circular-progress>
         <p>Analyzing your roof from satellite data...</p>
       </div>
 
@@ -88,47 +118,65 @@
         </div>
 
         <div class="rc-field">
-          <label for="rc-stories">Number of Stories</label>
-          <select id="rc-stories"></select>
+          <label>Number of Stories</label>
+          <md-outlined-select id="rc-stories"></md-outlined-select>
         </div>
 
         <div class="rc-field">
           <label>Does the roof area look correct?</label>
           <div class="rc-inline-group">
             <label class="rc-radio-label">
-              <input type="radio" name="rc-area-correct" value="yes" checked> Yes, looks right
+              <md-radio name="rc-area-correct" value="yes" checked></md-radio>
+              Yes, looks right
             </label>
             <label class="rc-radio-label">
-              <input type="radio" name="rc-area-correct" value="no"> No, let me adjust
+              <md-radio name="rc-area-correct" value="no"></md-radio>
+              No, let me adjust
             </label>
           </div>
         </div>
 
         <div id="rc-manual-area" class="rc-field hidden">
-          <label for="rc-custom-area">Enter roof area (sq ft)</label>
-          <input type="number" id="rc-custom-area" min="100" max="50000" step="10">
+          <md-outlined-text-field
+            id="rc-custom-area"
+            label="Enter roof area (sq ft)"
+            type="number"
+            min="100"
+            max="50000"
+            step="10"
+          ></md-outlined-text-field>
         </div>
 
-        <button id="rc-step2-next" class="rc-btn rc-btn-primary">Continue</button>
-        <button id="rc-step2-back" class="rc-btn rc-btn-secondary">Back</button>
+        <div class="rc-btn-row">
+          <md-filled-button id="rc-step2-next">Continue</md-filled-button>
+          <md-outlined-button id="rc-step2-back">Back</md-outlined-button>
+        </div>
       </div>
 
       <div id="rc-solar-error" class="rc-error hidden">
         <p>We couldn't automatically detect your roof. Please enter the details manually.</p>
         <div class="rc-field">
-          <label for="rc-fallback-area">Estimated Roof Area (sq ft)</label>
-          <input type="number" id="rc-fallback-area" min="100" max="50000" step="10" placeholder="e.g. 1800">
+          <md-outlined-text-field
+            id="rc-fallback-area"
+            label="Estimated Roof Area (sq ft)"
+            type="number"
+            min="100"
+            max="50000"
+            step="10"
+          ></md-outlined-text-field>
         </div>
         <div class="rc-field">
-          <label for="rc-fallback-pitch">Roof Pitch</label>
-          <select id="rc-fallback-pitch"></select>
+          <label>Roof Pitch</label>
+          <md-outlined-select id="rc-fallback-pitch"></md-outlined-select>
         </div>
         <div class="rc-field">
-          <label for="rc-fallback-stories">Number of Stories</label>
-          <select id="rc-fallback-stories"></select>
+          <label>Number of Stories</label>
+          <md-outlined-select id="rc-fallback-stories"></md-outlined-select>
         </div>
-        <button id="rc-fallback-next" class="rc-btn rc-btn-primary">Continue</button>
-        <button id="rc-fallback-back" class="rc-btn rc-btn-secondary">Back</button>
+        <div class="rc-btn-row">
+          <md-filled-button id="rc-fallback-next">Continue</md-filled-button>
+          <md-outlined-button id="rc-fallback-back">Back</md-outlined-button>
+        </div>
       </div>
     </section>
 
@@ -146,8 +194,13 @@
         <div id="rc-extras" class="rc-extras-list"></div>
       </div>
 
-      <button id="rc-step3-next" class="rc-btn rc-btn-primary">Get My Estimate</button>
-      <button id="rc-step3-back" class="rc-btn rc-btn-secondary">Back</button>
+      <div class="rc-btn-row">
+        <md-filled-button id="rc-step3-next">
+          <md-icon slot="icon">calculate</md-icon>
+          Get My Estimate
+        </md-filled-button>
+        <md-outlined-button id="rc-step3-back">Back</md-outlined-button>
+      </div>
     </section>
 
     <!-- Step 4: Estimate Results -->
@@ -166,19 +219,14 @@
       <div class="rc-lead-form">
         <h3>Get Your Detailed Quote</h3>
         <p>Leave your info and we'll follow up with a precise on-site estimate.</p>
-        <div class="rc-field">
-          <input type="text" id="rc-lead-name" placeholder="Full Name" required>
-        </div>
-        <div class="rc-field">
-          <input type="email" id="rc-lead-email" placeholder="Email Address" required>
-        </div>
-        <div class="rc-field">
-          <input type="tel" id="rc-lead-phone" placeholder="Phone Number" required>
-        </div>
-        <div class="rc-field">
-          <textarea id="rc-lead-notes" placeholder="Any additional notes (optional)" rows="3"></textarea>
-        </div>
-        <button id="rc-submit-lead" class="rc-btn rc-btn-primary">Request Full Quote</button>
+        <md-outlined-text-field id="rc-lead-name" label="Full Name" required></md-outlined-text-field>
+        <md-outlined-text-field id="rc-lead-email" label="Email Address" type="email" required></md-outlined-text-field>
+        <md-outlined-text-field id="rc-lead-phone" label="Phone Number" type="tel" required></md-outlined-text-field>
+        <md-outlined-text-field id="rc-lead-notes" label="Additional notes (optional)" type="textarea" rows="3"></md-outlined-text-field>
+        <md-filled-button id="rc-submit-lead">
+          <md-icon slot="icon">send</md-icon>
+          Request Full Quote
+        </md-filled-button>
       </div>
 
       <div id="rc-lead-success" class="rc-success hidden">
@@ -189,7 +237,10 @@
 
       <p class="rc-disclaimer" id="rc-disclaimer"></p>
 
-      <button id="rc-start-over" class="rc-btn rc-btn-secondary">Start Over</button>
+      <md-text-button id="rc-start-over">
+        <md-icon slot="icon">refresh</md-icon>
+        Start Over
+      </md-text-button>
     </section>
 
   </div>
