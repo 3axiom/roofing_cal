@@ -1,6 +1,5 @@
 /**
  * Admin Dashboard — Authentication, Pricing, Leads Management
- * Updated for Material 3 web components.
  */
 (async () => {
   let pricing = {};
@@ -187,7 +186,7 @@
     });
   }
 
-  // Search (MD3 text field fires input events)
+  // Search
   document.getElementById("leads-search").addEventListener("input", (e) => {
     renderLeads(e.target.value);
   });

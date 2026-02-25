@@ -8,28 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/admin/dashboard.css">
-
-  <script type="importmap">
-    {
-      "imports": {
-        "@material/web/": "https://esm.run/@material/web/"
-      }
-    }
-  </script>
-  <script type="module">
-    import '@material/web/button/filled-button.js';
-    import '@material/web/button/outlined-button.js';
-    import '@material/web/button/text-button.js';
-    import '@material/web/button/filled-tonal-button.js';
-    import '@material/web/textfield/outlined-text-field.js';
-    import '@material/web/iconbutton/icon-button.js';
-    import '@material/web/icon/icon.js';
-    import '@material/web/tabs/tabs.js';
-    import '@material/web/tabs/primary-tab.js';
-    import '@material/web/dialog/dialog.js';
-    import '@material/web/divider/divider.js';
-    import '@material/web/progress/circular-progress.js';
-  </script>
 </head>
 <body>
 
@@ -45,16 +23,18 @@
       </div>
       <form id="login-form">
         <div class="login-field">
-          <md-outlined-text-field id="login-user" label="Username" autocomplete="username" required style="width:100%"></md-outlined-text-field>
+          <label for="login-user">Username</label>
+          <input type="text" id="login-user" autocomplete="username" required placeholder="Enter username">
         </div>
         <div class="login-field">
-          <md-outlined-text-field id="login-pass" label="Password" type="password" autocomplete="current-password" required style="width:100%"></md-outlined-text-field>
+          <label for="login-pass">Password</label>
+          <input type="password" id="login-pass" autocomplete="current-password" required placeholder="Enter password">
         </div>
         <div id="login-error" class="login-error hidden"></div>
-        <md-filled-button type="submit" style="width:100%">
-          <md-icon slot="icon">login</md-icon>
+        <button type="submit" class="login-btn">
+          <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:6px;">login</span>
           Sign In
-        </md-filled-button>
+        </button>
       </form>
     </div>
   </div>
@@ -97,9 +77,9 @@
     <main class="dash-main">
       <!-- Mobile header -->
       <div class="dash-mobile-header">
-        <md-icon-button id="mobile-menu-btn">
-          <md-icon>menu</md-icon>
-        </md-icon-button>
+        <button id="mobile-menu-btn" class="mobile-menu-btn">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
         <span class="dash-mobile-title">Roofing Admin</span>
       </div>
 
@@ -113,9 +93,10 @@
         <div class="leads-stats" id="leads-stats"></div>
 
         <div class="leads-toolbar">
-          <md-outlined-text-field id="leads-search" label="Search leads..." style="width:100%;max-width:400px;">
-            <md-icon slot="leading-icon">search</md-icon>
-          </md-outlined-text-field>
+          <div class="search-field">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input type="text" id="leads-search" placeholder="Search by name, email, or address...">
+          </div>
         </div>
 
         <div class="leads-table-wrap">
@@ -135,7 +116,7 @@
             <tbody id="leads-body"></tbody>
           </table>
           <div id="leads-empty" class="leads-empty hidden">
-            <span class="material-symbols-outlined" style="font-size:48px;color:var(--md-sys-color-outline-variant);">group_off</span>
+            <span class="material-symbols-outlined" style="font-size:48px;color:#9ca3af;">group_off</span>
             <p>No leads yet. Quotes will appear here as customers use the calculator.</p>
           </div>
         </div>
@@ -157,10 +138,10 @@
             </thead>
             <tbody id="admin-materials"></tbody>
           </table>
-          <md-text-button id="admin-add-material">
-            <md-icon slot="icon">add</md-icon>
+          <button class="btn-add" id="admin-add-material">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:4px;">add</span>
             Add Material
-          </md-text-button>
+          </button>
         </div>
 
         <!-- Pitch Multipliers -->
@@ -194,29 +175,36 @@
             </thead>
             <tbody id="admin-extras"></tbody>
           </table>
-          <md-text-button id="admin-add-extra">
-            <md-icon slot="icon">add</md-icon>
+          <button class="btn-add" id="admin-add-extra">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:4px;">add</span>
             Add Extra
-          </md-text-button>
+          </button>
         </div>
 
         <!-- Other Settings -->
         <div class="dash-card">
           <h2>Other Settings</h2>
           <div class="settings-grid">
-            <md-outlined-text-field id="admin-min-price" label="Minimum Job Price ($)" type="number" step="100"></md-outlined-text-field>
-            <md-outlined-text-field id="admin-waste" label="Waste Factor (e.g. 1.10)" type="number" step="0.01" min="1" max="2"></md-outlined-text-field>
+            <div class="rc-field">
+              <label for="admin-min-price">Minimum Job Price ($)</label>
+              <input type="number" id="admin-min-price" step="100">
+            </div>
+            <div class="rc-field">
+              <label for="admin-waste">Waste Factor (e.g. 1.10 = 10%)</label>
+              <input type="number" id="admin-waste" step="0.01" min="1" max="2">
+            </div>
           </div>
-          <div style="margin-top:16px;">
-            <md-outlined-text-field id="admin-disclaimer" label="Disclaimer Text" type="textarea" rows="3" style="width:100%"></md-outlined-text-field>
+          <div class="rc-field" style="margin-top:16px;">
+            <label for="admin-disclaimer">Disclaimer Text</label>
+            <textarea id="admin-disclaimer" rows="3"></textarea>
           </div>
         </div>
 
         <div class="dash-actions">
-          <md-filled-button id="admin-save">
-            <md-icon slot="icon">save</md-icon>
+          <button class="btn-primary" id="admin-save">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:6px;">save</span>
             Save Pricing
-          </md-filled-button>
+          </button>
         </div>
         <div id="pricing-msg" class="dash-msg hidden"></div>
       </section>
@@ -230,16 +218,22 @@
 
         <div class="dash-card">
           <div class="settings-grid">
-            <md-outlined-text-field id="admin-company-name" label="Company Name"></md-outlined-text-field>
-            <md-outlined-text-field id="admin-company-phone" label="Company Phone" type="tel"></md-outlined-text-field>
+            <div class="rc-field">
+              <label for="admin-company-name">Company Name</label>
+              <input type="text" id="admin-company-name">
+            </div>
+            <div class="rc-field">
+              <label for="admin-company-phone">Company Phone</label>
+              <input type="tel" id="admin-company-phone">
+            </div>
           </div>
         </div>
 
         <div class="dash-actions">
-          <md-filled-button id="company-save">
-            <md-icon slot="icon">save</md-icon>
+          <button class="btn-primary" id="company-save">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:6px;">save</span>
             Save Company Info
-          </md-filled-button>
+          </button>
         </div>
         <div id="company-msg" class="dash-msg hidden"></div>
       </section>
@@ -251,9 +245,9 @@
     <div class="modal-card">
       <div class="modal-header">
         <h2>Lead Details</h2>
-        <md-icon-button id="modal-close">
-          <md-icon>close</md-icon>
-        </md-icon-button>
+        <button class="modal-close" id="modal-close">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
       <div id="modal-body" class="modal-body"></div>
     </div>
