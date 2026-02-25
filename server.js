@@ -13,14 +13,13 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // --- Service Account Auth for Solar API ---
+// Uses key file locally, or Application Default Credentials on Cloud Run
 const saKeyPath = path.join(__dirname, "config", "service-account.json");
-let solarAuth = null;
+const authOptions = { scopes: ["https://www.googleapis.com/auth/cloud-platform"] };
 if (fs.existsSync(saKeyPath)) {
-  solarAuth = new GoogleAuth({
-    keyFile: saKeyPath,
-    scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-  });
+  authOptions.keyFile = saKeyPath;
 }
+const solarAuth = new GoogleAuth(authOptions);
 
 // --- API Routes ---
 
@@ -28,10 +27,6 @@ if (fs.existsSync(saKeyPath)) {
 app.get("/api/solar", async (req, res) => {
   const { lat, lng } = req.query;
   if (!lat || !lng) return res.status(400).json({ error: "lat and lng are required" });
-
-  if (!solarAuth) {
-    return res.status(500).json({ error: "Service account not configured for Solar API" });
-  }
 
   const url = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${lat}&location.longitude=${lng}&requiredQuality=HIGH`;
 
