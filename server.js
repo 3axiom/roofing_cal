@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
+const { GoogleAuth } = require("google-auth-library");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,27 +12,37 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+// --- Service Account Auth for Solar API ---
+const saKeyPath = path.join(__dirname, "config", "service-account.json");
+let solarAuth = null;
+if (fs.existsSync(saKeyPath)) {
+  solarAuth = new GoogleAuth({
+    keyFile: saKeyPath,
+    scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+  });
+}
+
 // --- API Routes ---
 
-// Proxy: Google Solar API (keeps API key server-side)
+// Proxy: Google Solar API (authenticated via service account)
 app.get("/api/solar", async (req, res) => {
   const { lat, lng } = req.query;
   if (!lat || !lng) return res.status(400).json({ error: "lat and lng are required" });
 
-  const apiKey = process.env.GOOGLE_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: "Google API key not configured" });
+  if (!solarAuth) {
+    return res.status(500).json({ error: "Service account not configured for Solar API" });
+  }
 
-  const url = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${lat}&location.longitude=${lng}&requiredQuality=HIGH&key=${apiKey}`;
+  const url = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${lat}&location.longitude=${lng}&requiredQuality=HIGH`;
 
   try {
-    const response = await fetch(url);
-    const data = await response.json();
-    if (!response.ok) {
-      return res.status(response.status).json(data);
-    }
-    res.json(data);
+    const client = await solarAuth.getClient();
+    const response = await client.request({ url });
+    res.json(response.data);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch solar data", details: err.message });
+    const status = err.response?.status || 500;
+    const data = err.response?.data || { error: "Failed to fetch solar data", details: err.message };
+    res.status(status).json(data);
   }
 });
 
